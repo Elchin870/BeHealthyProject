@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeHealthyProject.Server", "BeHealthyProject.Server\BeHealthyProject.Server.csproj", "{5BB3FA95-63F7-4A95-9AD6-B4429C30F309}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "behealthyproject.client", "behealthyproject.client\behealthyproject.client.esproj", "{FBAF8E8A-2295-4B86-81E0-7F77CDAF8766}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5BB3FA95-63F7-4A95-9AD6-B4429C30F309}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BB3FA95-63F7-4A95-9AD6-B4429C30F309}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BB3FA95-63F7-4A95-9AD6-B4429C30F309}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BB3FA95-63F7-4A95-9AD6-B4429C30F309}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBAF8E8A-2295-4B86-81E0-7F77CDAF8766}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBAF8E8A-2295-4B86-81E0-7F77CDAF8766}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBAF8E8A-2295-4B86-81E0-7F77CDAF8766}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{FBAF8E8A-2295-4B86-81E0-7F77CDAF8766}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBAF8E8A-2295-4B86-81E0-7F77CDAF8766}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBAF8E8A-2295-4B86-81E0-7F77CDAF8766}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6496B675-6E80-4212-AB49-D238E5FF0537}
+	EndGlobalSection
+EndGlobal
