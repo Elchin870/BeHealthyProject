@@ -1,6 +1,7 @@
 ﻿using BeHealthyProject.Server.Data;
 using BeHealthyProject.Server.Dtos;
 using BeHealthyProject.Server.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -145,7 +146,7 @@ namespace BeHealthyProject.Server.Controllers
 
 			var token = new JwtSecurityToken(
 				issuer: _configuration["Jwt:Issuer"],
-				audience: _configuration["Jwt:Issuer"],
+				audience: _configuration["Jwt:Audience"],
 				expires: DateTime.Now.AddHours(3),
 				claims: authClaims,
 				signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256)
@@ -153,6 +154,36 @@ namespace BeHealthyProject.Server.Controllers
 
 			return token;
 		}
-	}
+
+        [Authorize(Roles = "User")] 
+        [HttpGet("protected-user")]
+        public ActionResult<string> ProtectedEndpoint()
+        {
+            var user = HttpContext.User;
+
+            if (user.Identity == null || !user.Identity.IsAuthenticated)
+                return Unauthorized("Invalid Token");
+
+            var name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
+            var role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+
+            return Ok($"Hello {name}, you are authenticated as a {role}!");
+        }
+
+        [Authorize(Roles = "Dietitian")] 
+        [HttpGet("protected-dietitian")]
+        public ActionResult<string> ProtectedEndpointDietitian()
+        {
+            var user = HttpContext.User;
+
+            if (user.Identity == null || !user.Identity.IsAuthenticated)
+                return Unauthorized("Invalid Token");
+
+            var name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
+            var role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+
+            return Ok($"Hello {name}, you are authenticated as a {role}!");
+        }
+    }
 
 }
