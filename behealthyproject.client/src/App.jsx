@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
-import SignUpPageUser from './components/SignUpPageUser';  // Import SignUpPageUser
-import SignUpPageDietitian from './components/SignUpPageDietitian';  // Import SignUpPageDietitian
+import SignUpPageUser from './components/SignUpPageUser';  
+import SignUpPageDietitian from './components/SignUpPageDietitian';
 
 function App() {
     return (
@@ -16,3 +16,5 @@ function App() {
 }
 
 export default App;
+
+ 

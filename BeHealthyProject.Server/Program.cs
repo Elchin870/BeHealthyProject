@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();	
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var conn = builder.Configuration.GetConnectionString("Default");
@@ -24,10 +24,10 @@ builder.Services.AddDbContext<BeHealthyDbContext>(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder => builder.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
+	options.AddPolicy("AllowAll",
+		builder => builder.AllowAnyOrigin()
+						  .AllowAnyMethod()
+						  .AllowAnyHeader());
 });
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -54,6 +54,8 @@ builder.Services.AddIdentityCore<User>(options =>
 	.AddRoles<IdentityRole>()
 	.AddEntityFrameworkStores<BeHealthyDbContext>()
 	.AddDefaultTokenProviders();
+
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -96,8 +98,8 @@ app.UseStaticFiles();
 app.UseMiddleware<GlobalErrorHandlerMiddleware>();
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 app.UseCors("AllowAll");

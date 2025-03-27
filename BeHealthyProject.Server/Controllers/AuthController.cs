@@ -1,11 +1,18 @@
 ﻿using BeHealthyProject.Server.Data;
 using BeHealthyProject.Server.Dtos;
 using BeHealthyProject.Server.Entities;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -21,25 +28,36 @@ namespace BeHealthyProject.Server.Controllers
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly BeHealthyDbContext _beHealthyDbContext;
 		private readonly IConfiguration _configuration;
+		private readonly IDistributedCache _cache;
 
-		public AuthController(UserManager<Dietitian> dietitianManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, BeHealthyDbContext beHealthyDbContext, IConfiguration configuration)
+		public AuthController(UserManager<Dietitian> dietitianManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, BeHealthyDbContext beHealthyDbContext, IConfiguration configuration, IDistributedCache cache)
 		{
 			_dietitianManager = dietitianManager;
 			_userManager = userManager;
 			_roleManager = roleManager;
 			_beHealthyDbContext = beHealthyDbContext;
 			_configuration = configuration;
+			_cache = cache;
 		}
 
 		[HttpPost("signup-user")]
-		public async Task<ActionResult> SignUpAsUser([FromBody]RegisterDto dto)
+		public async Task<ActionResult> SignUpAsUser([FromBody] RegisterDto dto)
 		{
+
+			var checkDbUser = await _beHealthyDbContext.Users.FirstOrDefaultAsync(u => u.UserName == dto.Username);
+			
+			if (checkDbUser != null)
+			{
+				Console.WriteLine(checkDbUser);
+				return BadRequest();
+			}
 			var user = new User
 			{
+				Nickname = dto.Nickname,
 				UserName = dto.Username,
 				Email = dto.Email,
 			};
-			var result = await _userManager.CreateAsync(user,dto.Password);
+			var result = await _userManager.CreateAsync(user, dto.Password);
 			if (result.Succeeded)
 			{
 				if (!await _roleManager.RoleExistsAsync("User"))
@@ -58,10 +76,16 @@ namespace BeHealthyProject.Server.Controllers
 			return BadRequest();
 		}
 		[HttpPost("signup-dietitian")]
-		public async Task<ActionResult> SignUpAsDietitian([FromBody]RegisterDto dto)
+		public async Task<ActionResult> SignUpAsDietitian([FromBody] RegisterDto dto)
 		{
+			var checkDbUser = await _beHealthyDbContext.Users.FirstOrDefaultAsync(u => u.UserName == dto.Username);
+			if (checkDbUser != null)
+			{
+				return BadRequest();
+			}
 			var dietitian = new Dietitian
 			{
+				Nickname = dto.Nickname,
 				UserName = dto.Username,
 				Email = dto.Email,
 			};
@@ -72,9 +96,9 @@ namespace BeHealthyProject.Server.Controllers
 				{
 					await _roleManager.CreateAsync(new IdentityRole("Dietitian"));
 				}
-				await _dietitianManager.AddToRoleAsync(dietitian,"Dietitian");
+				await _dietitianManager.AddToRoleAsync(dietitian, "Dietitian");
 
-				return Ok(new	
+				return Ok(new
 				{
 					Status = "Success",
 					Message = "Dietitian created succesfully"
@@ -140,6 +164,80 @@ namespace BeHealthyProject.Server.Controllers
 		}
 
 
+		[HttpPost("forgot-password")]
+		public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+		{
+			if (request.Email == null)
+				return NotFound();
+			Random rnd = new Random();
+			string resetCode = rnd.Next(100000, 999999).ToString();
+			var message = new MimeMessage();
+			message.From.Add(new MailboxAddress("No reply", "behealthydfit@gmail.com"));
+			message.To.Add(new MailboxAddress("Dear User", request.Email));
+			message.Subject = "Reset Password";
+			await _cache.SetStringAsync(request.Email, resetCode, new DistributedCacheEntryOptions()
+			{
+				AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+			}) ;
+			
+
+			message.Body = new TextPart("html")
+			{
+				Text = $@"
+    <html>
+    <body style='font-family: Arial, sans-serif; text-align: center; padding: 20px;'>
+        <div style='background: #fff; padding: 20px; border-radius: 8px; 
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); display: inline-block;'>
+            <h1>Password Reset Code</h1>
+            <p>Use the 6-digit code below to reset your password:</p>
+            <div style='font-size: 24px; font-weight: bold; color: #333; 
+                        background: #e0e0e0; padding: 10px; display: inline-block; 
+                        letter-spacing: 4px; border-radius: 5px;'>
+                {resetCode}
+            </div>
+            <p style='margin-top: 20px; font-size: 14px; color: #777;'>
+                This code is valid for 10 minutes. If you didn’t request a password reset, please ignore this email.
+            </p>
+        </div>
+    </body>
+    </html>"
+			};
+				
+			using (var client = new SmtpClient())
+			{
+				try
+				{
+					client.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+					client.Authenticate("behealthydfit@gmail.com", "fbkd ufim mbje rgmh");
+					client.Send(message);
+					client.Disconnect(true);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex.Message);
+				}
+			}
+			return Ok();
+
+
+		}
+		[HttpPut("reset-password")]
+		public async Task<ActionResult> ResetPassword(ResetPasswordRequest request)
+		{
+			var user = await _userManager.FindByEmailAsync(request.Email);
+			if (user == null)
+				return NotFound();
+			string resetCode = await _cache.GetStringAsync(request.Email);
+			
+			if(request.ResetCode == resetCode )
+			{
+				var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+				await _userManager.ChangePasswordAsync(user, resetToken, request.NewPassword);
+				_beHealthyDbContext.SaveChanges();
+			return Ok(user);
+			}
+			return NotFound();
+		}
 		private JwtSecurityToken GetToken(List<Claim> authClaims)
 		{
 			var authSigninKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -155,35 +253,35 @@ namespace BeHealthyProject.Server.Controllers
 			return token;
 		}
 
-        [Authorize(Roles = "User")] 
-        [HttpGet("protected-user")]
-        public ActionResult<string> ProtectedEndpoint()
-        {
-            var user = HttpContext.User;
+		[Authorize(Roles = "User")]
+		[HttpGet("protected-user")]
+		public ActionResult<string> ProtectedEndpoint()
+		{
+			var user = HttpContext.User;
 
-            if (user.Identity == null || !user.Identity.IsAuthenticated)
-                return Unauthorized("Invalid Token");
+			if (user.Identity == null || !user.Identity.IsAuthenticated)
+				return Unauthorized("Invalid Token");
 
-            var name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
-            var role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+			var name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
+			var role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
 
-            return Ok($"Hello {name}, you are authenticated as a {role}!");
-        }
+			return Ok($"Hello {name}, you are authenticated as a {role}!");
+		}
 
-        [Authorize(Roles = "Dietitian")] 
-        [HttpGet("protected-dietitian")]
-        public ActionResult<string> ProtectedEndpointDietitian()
-        {
-            var user = HttpContext.User;
+		[Authorize(Roles = "Dietitian")]
+		[HttpGet("protected-dietitian")]
+		public ActionResult<string> ProtectedEndpointDietitian()
+		{
+			var user = HttpContext.User;
 
-            if (user.Identity == null || !user.Identity.IsAuthenticated)
-                return Unauthorized("Invalid Token");
+			if (user.Identity == null || !user.Identity.IsAuthenticated)
+				return Unauthorized("Invalid Token");
 
-            var name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
-            var role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+			var name = user.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
+			var role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
 
-            return Ok($"Hello {name}, you are authenticated as a {role}!");
-        }
-    }
+			return Ok($"Hello {name}, you are authenticated as a {role}!");
+		}
+	}
 
 }

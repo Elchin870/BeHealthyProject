@@ -3,80 +3,58 @@ import { useNavigate } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function SignUpPage() {
-    const navigate = useNavigate();  
-    const [name, setName] = useState('');
-    const [surname, setSurname] = useState('');
+    const [username, setUsername] = useState('');
     const [nickname, setNickname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    //const [file, setFile] = useState(null);
 
-
-    const handleSignUp = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const response = await fetch("https://localhost:7148/api/Auth/signup-user", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username, nickname, email, password })
+        });
 
-        console.log('User signed up:', { name, surname, nickname, email, password });
+        if (response.ok) {
+            alert("Register successful!");
+            navigate("/dashboard");
+        } else {
+            alert("Invalid credentials.");
+        }
 
-        navigate('/');
     };
 
     return (
-        <div className="container-fluid d-flex justify-content-center align-items-center min-vh-100 bg-light">
-            <div className="row w-100 h-100 shadow-lg rounded p-5 bg-white d-flex align-items-center justify-content-center">
-                <div className="col-md-6 text-center p-5">
-                    <h2 className="mb-4 display-4 fw-bold">Sign Up</h2>
-                    <form onSubmit={handleSignUp}>
+        <div className="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
+            <div className="row w-100 shadow-lg rounded p-5 bg-white">
+                <div className="col-md-12 text-center">
+                    <h2 className="mb-4 display-4 fw-bold">User Sign Up</h2>
+                    <form onSubmit={handleSubmit}>
+
                         <div className="mb-4">
-                            <input
-                                type="text"
-                                className="form-control form-control-lg"
-                                placeholder="Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
+                            <input type="text" className="form-control" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
                         </div>
                         <div className="mb-4">
-                            <input
-                                type="text"
-                                className="form-control form-control-lg"
-                                placeholder="Surname"
-                                value={surname}
-                                onChange={(e) => setSurname(e.target.value)}
-                            />
+                            <input type="text" className="form-control" placeholder="Nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
                         </div>
                         <div className="mb-4">
-                            <input
-                                type="text"
-                                className="form-control form-control-lg"
-                                placeholder="Nickname"
-                                value={nickname}
-                                onChange={(e) => setNickname(e.target.value)}
-                            />
+                            <input type="email" className="form-control" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                         </div>
                         <div className="mb-4">
-                            <input
-                                type="email"
-                                className="form-control form-control-lg"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+                            <input type="password" className="form-control" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                         </div>
+                        {/*<div className="mb-4">*/}
+                        {/*    <input type="text" className="form-control" placeholder="Education" value={education} onChange={(e) => setEducation(e.target.value)} />*/}
+                        {/*</div>*/}
                         <div className="mb-4">
-                            <input
-                                type="password"
-                                className="form-control form-control-lg"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                            {/*<input type="file" className="form-control" onChange={(e) => setFile(e.target.files[0])} />*/}
                         </div>
-                        <button type="submit" className="btn btn-primary btn-lg w-100">
-                            Sign Up
-                        </button>
+                        <button type="submit" className="btn btn-success btn-lg w-100">Sign Up</button>
                     </form>
-                    <p className="mt-4">
-                        Already have an account? <button className="btn btn-link" onClick={() => navigate('/')}>Login</button>
-                    </p>
                 </div>
             </div>
         </div>
