@@ -232,7 +232,7 @@ namespace BeHealthyProject.Server.Controllers
 			if(request.ResetCode == resetCode )
 			{
 				var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-				await _userManager.ChangePasswordAsync(user, resetToken, request.NewPassword);
+				await _userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
 				_beHealthyDbContext.SaveChanges();
 			return Ok(user);
 			}
