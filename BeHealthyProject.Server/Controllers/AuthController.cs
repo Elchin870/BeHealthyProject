@@ -169,6 +169,7 @@ namespace BeHealthyProject.Server.Controllers
 		{
 			if (request.Email == null)
 				return NotFound();
+
 			Random rnd = new Random();
 			string resetCode = rnd.Next(100000, 999999).ToString();
 			var message = new MimeMessage();
@@ -228,15 +229,25 @@ namespace BeHealthyProject.Server.Controllers
 			if (user == null)
 				return NotFound();
 			string resetCode = await _cache.GetStringAsync(request.Email);
-			
-			if(request.ResetCode == resetCode )
+
+			if (request.ResetCode == resetCode)
 			{
 				var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-				await _userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
-				_beHealthyDbContext.SaveChanges();
-			return Ok(user);
+
+				var result = await _userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
+
+				if (result.Succeeded)
+				{
+					return Ok(new { message = "Password reset successfully!" });
+				}
+				else
+				{
+					return BadRequest(new { message = "Error resetting password", errors = result.Errors });
+				}
 			}
-			return NotFound();
+
+			return BadRequest(new { message = "Invalid reset code." });
+
 		}
 		private JwtSecurityToken GetToken(List<Claim> authClaims)
 		{

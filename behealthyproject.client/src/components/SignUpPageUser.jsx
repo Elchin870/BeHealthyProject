@@ -9,6 +9,10 @@ function SignUpPage() {
     const [password, setPassword] = useState('');
     //const [file, setFile] = useState(null);
 
+    const navigate = useNavigate();
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const response = await fetch("https://localhost:7148/api/Auth/signup-user", {
@@ -21,7 +25,7 @@ function SignUpPage() {
 
         if (response.ok) {
             alert("Register successful!");
-            navigate("/dashboard");
+            navigate("/");
         } else {
             alert("Invalid credentials.");
         }

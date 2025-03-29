@@ -1,4 +1,4 @@
-import "bootstrap/dist/css/bootstrap.min.css";      
+import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,16 +18,16 @@ function SignUpPageDietitian() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ username, nickname,email,password })
+            body: JSON.stringify({ username, nickname, email, password })
         });
 
         if (response.ok) {
             alert("Register successful!");
-            navigate("/dashboard");
+            navigate("/");
         } else {
             alert("Invalid credentials.");
         }
-    
+
     };
 
     return (
@@ -36,7 +36,7 @@ function SignUpPageDietitian() {
                 <div className="col-md-12 text-center">
                     <h2 className="mb-4 display-4 fw-bold">Dietitian Sign Up</h2>
                     <form onSubmit={handleSubmit}>
-                        
+
                         <div className="mb-4">
                             <input type="text" className="form-control" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
                         </div>
