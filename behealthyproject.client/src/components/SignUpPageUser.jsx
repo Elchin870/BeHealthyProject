@@ -11,6 +11,9 @@ function SignUpPage() {
 
     const navigate = useNavigate();
 
+    const goToLoginPage = () => {
+        navigate('/')
+    }
 
 
     const handleSubmit = async (e) => {
@@ -36,7 +39,7 @@ function SignUpPage() {
         <div className="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
             <div className="row w-100 shadow-lg rounded p-5 bg-white">
                 <div className="col-md-12 text-center">
-                    <h2 className="mb-4 display-4 fw-bold">User Sign Up</h2>
+                    <h2 className="mb-4 display-6 fw-bold">User Sign Up</h2>
                     <form onSubmit={handleSubmit}>
 
                         <div className="mb-4">
@@ -59,6 +62,7 @@ function SignUpPage() {
                         </div>
                         <button type="submit" className="btn btn-success btn-lg w-100">Sign Up</button>
                     </form>
+                    <button className="text-end btn btn-primary mt-3 mb-0" onClick={goToLoginPage}>If you have account</button>
                 </div>
             </div>
         </div>

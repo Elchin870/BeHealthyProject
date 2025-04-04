@@ -4,7 +4,7 @@ function UserPage() {
 
 
   return (
-    <p>Hello world!</p>
+    <h1>Hello</h1>
   );
 }
 

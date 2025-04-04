@@ -2,36 +2,31 @@ import { useNavigate } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from 'react';
 
-function LoginPage() {
+function LoginPageUser() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [showModal, setShowModal] = useState(false); 
-    const [email, setEmail] = useState(""); 
+    const [showModal, setShowModal] = useState(false);
+    const [email, setEmail] = useState("");
 
     const navigate = useNavigate();
 
     const goToUserSignUp = () => {
         navigate('/signup/user');
-    };
-
-    const goToDietitianSignUp = () => {
-        navigate('/signup/dietitian');
-    };
-
-    const setModal = () => {
-        setShowModal(true); 
-    };
-    const goToResetPassword = () => {
-        navigate('/resetpassword')
     }
-
+    const goToDietitianSignIn = () => {
+        navigate('/signin/dietitian')
+    }
+    const goToResetPassword = () => {
+        navigate('/resetpassword');
+    }
+    const setModal = () => {
+        setShowModal(true);
+    };
     const handleLoginUser = async (ev) => {
         ev.preventDefault();
         const response = await fetch("https://localhost:7148/api/Auth/signin-user", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
         });
 
@@ -44,50 +39,32 @@ function LoginPage() {
             alert("Invalid credentials.");
         }
     };
-    const handleLoginDietitian = async (ev) => {
-        ev.preventDefault();
-        const response = await fetch("https://localhost:7148/api/Auth/signin-dietitian", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username, password })
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            localStorage.setItem("token", result.token);
-            alert("Login successful!");
-            navigate("/dietitianpage");
-        } else {
-            alert("Invalid credentials.");
-        }
-    };
 
     const handleSubmitPasswordReset = async (e) => {
         e.preventDefault();
 
         const response = await fetch("https://localhost:7148/api/Auth/forgot-password", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email })
         });
 
         if (response.ok) {
             alert("Sent mail");
-            setShowModal(false); 
+            setShowModal(false);
         } else {
             alert("Invalid credentials.");
         }
     };
 
     return (
-        <div className="container-fluid d-flex justify-content-center align-items-center min-vh-100 bg-light">
-            <div className="row w-100 h-100 shadow-lg rounded p-5 bg-white d-flex align-items-center justify-content-center">
-                <div className="col-md-6 text-center border-end p-5">
-                    <h2 className="mb-4 display-4 fw-bold">User</h2>
+        <div className="container-fluid d-flex justify-content-center align-items-center min-vh-100 bg-dark homepage">
+            <div className="row w-50 bg-body-secondary d-flex align-items-center justify-content-center " style={{
+                height: "30rem",
+                borderRadius: 55
+            }}>
+                <div className="col-md-6 text-center p-0 ">
+                    <h2 className="mb-4 display-6 fw-bold">User</h2>
                     <form>
                         <div className="mb-4">
                             <input
@@ -97,7 +74,7 @@ function LoginPage() {
                                 onChange={e => setUsername(e.target.value)}
                             />
                         </div>
-                        <div className="mb-4">
+                        <div className="mb-1">
                             <input
                                 type="password"
                                 className="form-control form-control-lg"
@@ -105,44 +82,24 @@ function LoginPage() {
                                 onChange={e => setPassword(e.target.value)}
                             />
                         </div>
-                        <button className="btn btn-primary btn-lg w-100" onClick={handleLoginUser}>Sign In</button>
                     </form>
-                    <p className="mt-4">
-                        <button onClick={setModal} className="text-muted fw-bold">Forgot password</button>
+                    <div className="row mt-2">
+                        <button className="btn btn-success w-100  col " onClick={handleLoginUser}>Sign In</button>
+                        <p className="mt-0 mb-0 text-end col ">
+                            <button onClick={setModal} className="btn btn-link text-dark">Forgot password</button>
+                        </p>
+                    </div>
+                    <hr className="border border-dark border-2 opacity-100 mt-3 mb-2"></hr>
+
+                    <p className="text-dark text-start m-0">
+                        Don't have an account? <button onClick={goToUserSignUp} className="text-success fw-bold btn btn-link:focus ">Sign Up</button>
                     </p>
-                    <p className="mt-4">
-                        Don't have an account? <button onClick={goToUserSignUp} className="text-primary fw-bold">Sign Up</button>
+                    <p className="text-dark text-start m-0">
+                        Login as<button onClick={goToDietitianSignIn} className="text-success fw-bold btn btn-link:focus">Dietitian</button>
                     </p>
+
                 </div>
 
-                <div className="col-md-6 text-center p-5">
-                    <h2 className="mb-4 display-4 fw-bold">Dietitian</h2>
-                    <form>
-                        <div className="mb-4">
-                            <input
-                                type="email"
-                                className="form-control form-control-lg"
-                                placeholder="Username"
-                                onChange={e => setUsername(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <input
-                                type="password"
-                                className="form-control form-control-lg"
-                                placeholder="Password"
-                                onChange={e => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <button className="btn btn-success btn-lg w-100" onClick={handleLoginDietitian}>Sign In</button>
-                    </form>
-                    <p className="mt-4">
-                        <button onClick={setModal} className="text-muted fw-bold">Forgot password</button>
-                    </p>
-                    <p className="mt-4">
-                        Don't have an account? <button onClick={goToDietitianSignUp} className="text-success fw-bold">Sign Up</button>
-                    </p>
-                </div>
             </div>
 
             {showModal && (
@@ -175,10 +132,9 @@ function LoginPage() {
                 </div>
             )}
 
-            {/* Modal arka planý */}
             {showModal && <div className="modal-backdrop fade show"></div>}
         </div>
     );
 }
 
-export default LoginPage;
+export default LoginPageUser;
