@@ -21,6 +21,7 @@ builder.Services.AddDbContext<BeHealthyDbContext>(options =>
 {
 	options.UseSqlServer(conn);
 });
+builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>
 {

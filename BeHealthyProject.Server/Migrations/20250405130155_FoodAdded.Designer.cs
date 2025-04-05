@@ -4,6 +4,7 @@ using BeHealthyProject.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeHealthyProject.Server.Migrations
 {
     [DbContext(typeof(BeHealthyDbContext))]
-    partial class BeHealthyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250405130155_FoodAdded")]
+    partial class FoodAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,16 +25,13 @@ namespace BeHealthyProject.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Food", b =>
+            modelBuilder.Entity("BeHealthyProject.Server.Entities.Food", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<float>("Calories")
-                        .HasColumnType("real");
 
                     b.Property<float>("CarbohydratesTotalG")
                         .HasColumnType("real");
@@ -56,9 +56,6 @@ namespace BeHealthyProject.Server.Migrations
                         .HasColumnType("real");
 
                     b.Property<float>("ProteinG")
-                        .HasColumnType("real");
-
-                    b.Property<float>("ServingSizeG")
                         .HasColumnType("real");
 
                     b.Property<float>("SodiumMg")
