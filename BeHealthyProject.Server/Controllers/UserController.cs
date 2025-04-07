@@ -1,23 +1,74 @@
-﻿using BeHealthyProject.Server.Entities;
+﻿using BeHealthyProject.Server.Dtos;
+using BeHealthyProject.Server.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BeHealthyProject.Server.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize(Roles = "User")]
 	public class UserController : ControllerBase
 	{
-		//private readonly UserManager<User> _user;
+		private readonly UserManager<BaseUser> _userManager;
 
-		//[HttpPut]
-		//[Authorize(Roles = "User")]
-		//public async Task<ActionResult> EditProfile()
-		//{
+		public UserController(UserManager<BaseUser> userManager)
+		{
+			_userManager = userManager;
+		}
 
-		//}
+		[HttpPut("update-profile")]
+		public async Task<ActionResult> UpdateProfile([FromBody] UpdateUserProfileDto dto)
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (string.IsNullOrEmpty(userId))
+			{
+				return Unauthorized("Invalid token.");
+			}
 
+			var baseUser = await _userManager.FindByIdAsync(userId);
+			var user = baseUser as User;
+
+			if (user == null)
+			{
+				return NotFound("User not found!");
+			}
+
+			if (dto.Height != null || dto.Height != 0 && dto.Age != null || dto.Age != 0 && dto.Weight != null || dto.Weight != 0)
+			{
+				user.Height = dto.Height;
+				user.Weight = dto.Weight;
+				user.Age = dto.Age;
+			}
+
+
+			var result = await _userManager.UpdateAsync(user);
+
+			if (result.Succeeded)
+			{
+				return Ok(new { message = "Profile updated successfully!" });
+			}
+			else
+			{
+				return BadRequest(new { message = "Failed to update profile", errors = result.Errors });
+			}
+
+		}
+		[HttpGet("get-profile")]
+		public async Task<ActionResult> GetProfileData()
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (userId == null)
+			{
+				return NotFound("User not found!");
+			}
+			var baseUser = await _userManager.FindByIdAsync(userId);
+			var user = baseUser as User;
+			if (user == null) { return NotFound(); }
+			return Ok(new UpdateUserProfileDto { Age = user.Age, Height = user.Height, Weight = user.Weight });
+		}
 	}
 }

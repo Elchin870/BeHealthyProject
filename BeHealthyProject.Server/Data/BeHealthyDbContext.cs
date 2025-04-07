@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BeHealthyProject.Server.Data
 {
-	public class BeHealthyDbContext : IdentityDbContext<IdentityUser>
+	public class BeHealthyDbContext : IdentityDbContext<BaseUser>
 	{
 		public BeHealthyDbContext(DbContextOptions options) : base(options)
 		{
@@ -14,7 +14,7 @@ namespace BeHealthyProject.Server.Data
 
         public DbSet<Dietitian> Dietitians { get; set; }
 
-        public DbSet<Food> Foods { get; set; }
+		public DbSet<Food> Foods { get; set; }
 
-    }
+	}
 }

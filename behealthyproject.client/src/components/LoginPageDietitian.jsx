@@ -1,12 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from 'react';
+import { Spinner } from 'reactstrap';
+import { Button } from 'reactstrap';
 
 function LoginPageDietitian() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -26,22 +29,28 @@ function LoginPageDietitian() {
     }
 
     const handleLoginDietitian = async (ev) => {
+        setLoading(true);
         ev.preventDefault();
-        const response = await fetch("https://localhost:7148/api/Auth/signin-dietitian", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username, password })
-        });
+        try {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            const response = await fetch("https://localhost:7148/api/Auth/signin-dietitian", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            });
 
-        if (response.ok) {
-            const result = await response.json();
-            localStorage.setItem("token", result.token);
-            alert("Login successful!");
-            navigate("/dietitianpage");
-        } else {
-            alert("Invalid credentials.");
+            if (response.ok) {
+                const result = await response.json();
+                localStorage.setItem("token", result.token);
+                alert("Login successful!");
+                navigate("/dietitianpage");
+            } else {
+                alert("Invalid credentials.");
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -67,7 +76,7 @@ function LoginPageDietitian() {
     return (
 
         <div className="container-fluid d-flex justify-content-center align-items-center min-vh-100 bg-dark homepage">
-            <div className="row w-50  bg-body-secondary d-flex align-items-center justify-content-center  " style={{
+            <div className="row w-50 bg-body-secondary d-flex align-items-center justify-content-center  " style={{
                 height: "30rem",
                 borderRadius: 55
             }}>
@@ -92,17 +101,34 @@ function LoginPageDietitian() {
                         </div>
                     </form>
                     <div className="row mt-2">
-                    <button className="btn btn-success w-100 mt-0 col" onClick={handleLoginDietitian}>Sign In</button>
-                    <p className="mt-0 mb-0 text-end col">
-                        <button onClick={setModal} className="btn btn-link text-dark">Forgot password</button>
-                    </p>
+                        <button className="btn btn-success w-100  col " onClick={handleLoginDietitian}>
+                            {
+                                loading ? (
+                                    <Button
+                                        color="success"
+                                        disabled
+                                    >
+                                        <Spinner size="sm">
+                                            Loading...
+                                        </Spinner>
+                                        <span>
+                                            {' '}Loading
+                                        </span>
+                                    </Button>
+                                ) : ("Sign In")
+                            }
+
+                        </button>
+                        <p className="mt-0 mb-0 text-end col">
+                            <button onClick={setModal} className="btn btn-link text-dark">Forgot password</button>
+                        </p>
                     </div>
                     <hr className="border border-dark border-2 opacity-100"></hr>
                     <p className="text-dark text-start m-0">
-                        Don't have an account? <button onClick={goToDietitianSignUp} className="text-success fw-bold btn btn-link">Sign Up</button>
+                        Don't have an account? <button onClick={goToDietitianSignUp} className="text-success fw-bold btn btn-link:focus">Sign Up</button>
                     </p>
                     <p className="text-dark text-start m-0">
-                        Login as User <button onClick={goToUserSignIn} className="text-success fw-bold btn btn-link">User</button>
+                        Login as<button onClick={goToUserSignIn} className="text-success fw-bold btn btn-link:focus">User</button>
                     </p>
                 </div>
 

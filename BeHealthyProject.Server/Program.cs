@@ -40,22 +40,12 @@ builder.Services.Configure<IdentityOptions>(options =>
 	options.Password.RequireLowercase = false;
 });
 
-builder.Services.AddIdentityCore<Dietitian>(options =>
+builder.Services.AddIdentity<BaseUser, IdentityRole>(options =>
 {
 	options.User.RequireUniqueEmail = true;
 })
-	.AddRoles<IdentityRole>()
-	.AddEntityFrameworkStores<BeHealthyDbContext>()
-	.AddDefaultTokenProviders();
-
-builder.Services.AddIdentityCore<User>(options =>
-{
-	options.User.RequireUniqueEmail = true;
-})
-	.AddRoles<IdentityRole>()
-	.AddEntityFrameworkStores<BeHealthyDbContext>()
-	.AddDefaultTokenProviders();
-
+.AddEntityFrameworkStores<BeHealthyDbContext>()
+.AddDefaultTokenProviders();
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddAuthentication(options =>

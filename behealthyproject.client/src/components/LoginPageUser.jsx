@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from 'react';
-
+import { Spinner } from 'reactstrap';
+import { Button } from 'reactstrap';
 function LoginPageUser() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
 
     const navigate = useNavigate();
@@ -24,19 +26,25 @@ function LoginPageUser() {
     };
     const handleLoginUser = async (ev) => {
         ev.preventDefault();
-        const response = await fetch("https://localhost:7148/api/Auth/signin-user", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
+        setLoading(true);
+        try {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            const response = await fetch("https://localhost:7148/api/Auth/signin-user", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
 
-        if (response.ok) {
-            const result = await response.json();
-            localStorage.setItem("token", result.token);
-            alert("Login successful!");
-            navigate("/userpage");
-        } else {
-            alert("Invalid credentials.");
+            if (response.ok) {
+                const result = await response.json();
+                localStorage.setItem("token", result.token);
+                alert("Login successful!");
+                navigate("/completeuserprofile");
+            } else {
+                alert("Invalid credentials.");
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -84,7 +92,24 @@ function LoginPageUser() {
                         </div>
                     </form>
                     <div className="row mt-2">
-                        <button className="btn btn-success w-100  col " onClick={handleLoginUser}>Sign In</button>
+                        <button className="btn btn-success w-100  col " onClick={handleLoginUser} disabled={loading}>
+                            {
+                                loading ? (
+                                    <Button
+                                        color="succes"
+                                        disabled
+                                    >
+                                        <Spinner size="sm">
+                                            Loading...
+                                        </Spinner>
+                                        <span>
+                                            {' '}Loading
+                                        </span>
+                                    </Button>
+                                ) : ("Sign In")
+                            }
+
+                        </button>
                         <p className="mt-0 mb-0 text-end col ">
                             <button onClick={setModal} className="btn btn-link text-dark">Forgot password</button>
                         </p>

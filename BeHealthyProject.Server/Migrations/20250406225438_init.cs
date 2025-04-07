@@ -30,6 +30,7 @@ namespace BeHealthyProject.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Nickname = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Discriminator = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
                     Specialization = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Certifications = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -55,6 +56,30 @@ namespace BeHealthyProject.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Foods",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Calories = table.Column<float>(type: "real", nullable: false),
+                    ServingSizeG = table.Column<float>(type: "real", nullable: false),
+                    FatTotalG = table.Column<float>(type: "real", nullable: false),
+                    FatSaturatedG = table.Column<float>(type: "real", nullable: false),
+                    ProteinG = table.Column<float>(type: "real", nullable: false),
+                    SodiumMg = table.Column<float>(type: "real", nullable: false),
+                    PotassiumMg = table.Column<float>(type: "real", nullable: false),
+                    CholesterolMg = table.Column<float>(type: "real", nullable: false),
+                    CarbohydratesTotalG = table.Column<float>(type: "real", nullable: false),
+                    FiberG = table.Column<float>(type: "real", nullable: false),
+                    SugarG = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Foods", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -220,6 +245,9 @@ namespace BeHealthyProject.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Foods");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

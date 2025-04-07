@@ -23,16 +23,14 @@ namespace BeHealthyProject.Server.Controllers
 	[ApiController]
 	public class AuthController : ControllerBase
 	{
-		private readonly UserManager<Dietitian> _dietitianManager;
-		private readonly UserManager<User> _userManager;
+		private readonly UserManager<BaseUser> _userManager;
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly BeHealthyDbContext _beHealthyDbContext;
 		private readonly IConfiguration _configuration;
 		private readonly IDistributedCache _cache;
 
-		public AuthController(UserManager<Dietitian> dietitianManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, BeHealthyDbContext beHealthyDbContext, IConfiguration configuration, IDistributedCache cache)
+		public AuthController(UserManager<BaseUser> userManager, RoleManager<IdentityRole> roleManager, BeHealthyDbContext beHealthyDbContext, IConfiguration configuration, IDistributedCache cache)
 		{
-			_dietitianManager = dietitianManager;
 			_userManager = userManager;
 			_roleManager = roleManager;
 			_beHealthyDbContext = beHealthyDbContext;
@@ -43,12 +41,13 @@ namespace BeHealthyProject.Server.Controllers
 		[HttpPost("signup-user")]
 		public async Task<ActionResult> SignUpAsUser([FromBody] RegisterDto dto)
 		{
+			if (!ModelState.IsValid)
+				return BadRequest();
 
 			var checkDbUser = await _beHealthyDbContext.Users.FirstOrDefaultAsync(u => u.UserName == dto.Username);
 			
 			if (checkDbUser != null)
 			{
-				Console.WriteLine(checkDbUser);
 				return BadRequest();
 			}
 			var user = new User
@@ -57,6 +56,7 @@ namespace BeHealthyProject.Server.Controllers
 				UserName = dto.Username,
 				Email = dto.Email,
 			};
+			
 			var result = await _userManager.CreateAsync(user, dto.Password);
 			if (result.Succeeded)
 			{
@@ -78,6 +78,9 @@ namespace BeHealthyProject.Server.Controllers
 		[HttpPost("signup-dietitian")]
 		public async Task<ActionResult> SignUpAsDietitian([FromBody] RegisterDto dto)
 		{
+			if (!ModelState.IsValid)
+				return BadRequest();
+
 			var checkDbUser = await _beHealthyDbContext.Users.FirstOrDefaultAsync(u => u.UserName == dto.Username);
 			if (checkDbUser != null)
 			{
@@ -89,14 +92,14 @@ namespace BeHealthyProject.Server.Controllers
 				UserName = dto.Username,
 				Email = dto.Email,
 			};
-			var result = await _dietitianManager.CreateAsync(dietitian, dto.Password);
+			var result = await _userManager.CreateAsync(dietitian, dto.Password);
 			if (result.Succeeded)
 			{
 				if (!await _roleManager.RoleExistsAsync("Dietitian"))
 				{
 					await _roleManager.CreateAsync(new IdentityRole("Dietitian"));
 				}
-				await _dietitianManager.AddToRoleAsync(dietitian, "Dietitian");
+				await _userManager.AddToRoleAsync(dietitian, "Dietitian");
 
 				return Ok(new
 				{
@@ -110,8 +113,11 @@ namespace BeHealthyProject.Server.Controllers
 		[HttpPost("signin-user")]
 		public async Task<IActionResult> SignInForUser([FromBody] LoginDto dto)
 		{
-			var user = await _userManager.FindByNameAsync(dto.Username);
+			if (!ModelState.IsValid)
+				return BadRequest();
 
+			var baseUser = await _userManager.FindByNameAsync(dto.Username);
+			var user = baseUser as User;
 			if (user != null && await _userManager.CheckPasswordAsync(user, dto.Password))
 			{
 				var userRoles = await _userManager.GetRolesAsync(user);
@@ -121,7 +127,7 @@ namespace BeHealthyProject.Server.Controllers
 					new Claim(ClaimTypes.Name,user.UserName),
 					new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
 				};
-
+				authClaims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
 				foreach (var role in userRoles)
 				{
 					authClaims.Add(new Claim(ClaimTypes.Role, role));
@@ -138,23 +144,26 @@ namespace BeHealthyProject.Server.Controllers
 		[HttpPost("signin-dietitian")]
 		public async Task<IActionResult> SignInForDietitian([FromBody] LoginDto dto)
 		{
-			var user = await _dietitianManager.FindByNameAsync(dto.Username);
+			if (!ModelState.IsValid)
+				return BadRequest();
 
-			if (user != null && await _dietitianManager.CheckPasswordAsync(user, dto.Password))
+			var baseUser = await _userManager.FindByNameAsync(dto.Username);
+			var user = baseUser as Dietitian;
+			if (user != null && await _userManager.CheckPasswordAsync(user, dto.Password))
 			{
-				var userRoles = await _dietitianManager.GetRolesAsync(user);
+				var userRoles = await _userManager.GetRolesAsync(user);
+				
 
 				var authClaims = new List<Claim>
 				{
 					new Claim(ClaimTypes.Name,user.UserName),
 					new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
 				};
-
+				authClaims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
 				foreach (var role in userRoles)
 				{
 					authClaims.Add(new Claim(ClaimTypes.Role, role));
 				}
-
 				var token = GetToken(authClaims);
 
 				return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token), Expiration = token.ValidTo });
@@ -167,6 +176,9 @@ namespace BeHealthyProject.Server.Controllers
 		[HttpPost("forgot-password")]
 		public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
 		{
+			if (!ModelState.IsValid)
+				return BadRequest();
+
 			if (request.Email == null)
 				return NotFound();
 
@@ -232,6 +244,7 @@ namespace BeHealthyProject.Server.Controllers
 
 			if (request.ResetCode == resetCode)
 			{
+				
 				var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
 				var result = await _userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
