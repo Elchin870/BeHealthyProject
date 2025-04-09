@@ -1,5 +1,5 @@
+using BeHealthyProject.Entities;
 using BeHealthyProject.Server.Data;
-using BeHealthyProject.Server.Entities;
 using BeHealthyProject.Server.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

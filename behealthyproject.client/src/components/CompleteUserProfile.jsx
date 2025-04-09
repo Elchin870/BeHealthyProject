@@ -36,8 +36,6 @@ function CompleteUserProfile() {
     }
 
     useEffect(() => {
-        
-
         const fetchData = async () => {
             try {
                 const response = await fetch("https://localhost:7148/api/User/get-profile", {
@@ -58,11 +56,7 @@ function CompleteUserProfile() {
                     alert("Invalid credentials.");
                 }
 
-                if (age != null && height != null && weight != null) {
-
-                    navigate("/userpage")
-                }
-
+                
 
             } catch (error) {
                 console.error("Error fetching profile data:", error);
@@ -71,15 +65,18 @@ function CompleteUserProfile() {
 
         fetchData();
     }, [navigate]);
-    const handleBirthdayChange = (e) => {
-        const birthDate = new Date(e.target.value); // Doðum tarihini al
-        const currentDate = new Date(); // Mevcut tarihi al
+    if (age != null && height != null && weight != null) {
 
-        // Yaþ hesaplama: Farký yýl cinsine çeviriyoruz
+        navigate("/userpage")
+    }
+
+    const handleBirthdayChange = (e) => {
+        const birthDate = new Date(e.target.value); 
+        const currentDate = new Date(); 
+
         const age = currentDate.getFullYear() - birthDate.getFullYear();
         const monthDifference = currentDate.getMonth() - birthDate.getMonth();
 
-        // Eðer doðum günü henüz geçmemiþse, yaþý bir azaltýyoruz
         if (monthDifference < 0 || (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())) {
             setAge(age - 1);
         } else {

@@ -1,6 +1,6 @@
-﻿using BeHealthyProject.Server.Data;
+﻿using BeHealthyProject.Entities;
+using BeHealthyProject.Server.Data;
 using BeHealthyProject.Server.Dtos;
-using BeHealthyProject.Server.Entities;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;

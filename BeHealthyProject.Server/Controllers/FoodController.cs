@@ -1,6 +1,5 @@
 ﻿using BeHealthyProject.Server.Data;
 using BeHealthyProject.Server.Dtos;
-using BeHealthyProject.Server.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 

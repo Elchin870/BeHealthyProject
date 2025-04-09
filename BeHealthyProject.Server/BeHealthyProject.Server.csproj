@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BeHealthyProject.BusinessLayer\BeHealthyProject.BusinessLayer.csproj" />
     <ProjectReference Include="..\behealthyproject.client\behealthyproject.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

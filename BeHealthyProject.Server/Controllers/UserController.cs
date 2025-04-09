@@ -1,5 +1,5 @@
-﻿using BeHealthyProject.Server.Dtos;
-using BeHealthyProject.Server.Entities;
+﻿using BeHealthyProject.Entities;
+using BeHealthyProject.Server.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
