@@ -42,6 +42,7 @@ namespace BeHealthyProject.Server.Controllers
 				user.Height = dto.Height;
 				user.Weight = dto.Weight;
 				user.Age = dto.Age;
+
 			}
 
 
@@ -49,7 +50,9 @@ namespace BeHealthyProject.Server.Controllers
 
 			if (result.Succeeded)
 			{
-				return Ok(new { message = "Profile updated successfully!" });
+				user.IsCompleteProfile = true;
+                await _userManager.UpdateAsync(user);
+                return Ok(new { message = "Profile updated successfully!" });
 			}
 			else
 			{
@@ -68,7 +71,7 @@ namespace BeHealthyProject.Server.Controllers
 			var baseUser = await _userManager.FindByIdAsync(userId);
 			var user = baseUser as User;
 			if (user == null) { return NotFound(); }
-			return Ok(new UpdateUserProfileDto { Age = user.Age, Height = user.Height, Weight = user.Weight });
+			return Ok(new UpdateUserProfileDto { Age = user.Age, Height = user.Height, Weight = user.Weight, IsCompleteProfile = user.IsCompleteProfile });
 		}
 	}
 }

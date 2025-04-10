@@ -13,9 +13,12 @@ function CompleteUserProfile() {
     const [age, setAge] = useState(null);
     const [height, setHeight] = useState(null);
     const [weight, setWeight] = useState(null);
+    const [isComplete, setIsComplete] = useState();
+
 
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
+
 
     const handleSubmitProfile = async (ev) => {
         ev.preventDefault();
@@ -28,12 +31,16 @@ function CompleteUserProfile() {
             body: JSON.stringify({ age, height, weight })
         });
         if (response.ok) {
+
             alert("Updated Profile!");
             navigate("/userpage");
         } else {
             alert("Invalid credentials.");
         }
     }
+
+
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,30 +56,38 @@ function CompleteUserProfile() {
 
                 if (response.ok) {
                     const data = await response.json();
+                    if (data.isCompleteProfile) {
+                        navigate("/userpage");
+                        return;
+                    }
+
+
                     setAge(data.age);
                     setHeight(data.height);
                     setWeight(data.weight);
+                    setIsComplete(data.isComplete)
+
                 } else {
                     alert("Invalid credentials.");
                 }
+                console.log(isComplete)
 
-                
+
 
             } catch (error) {
                 console.error("Error fetching profile data:", error);
             }
         };
 
-        fetchData();
-    }, [navigate]);
-    if (age != null && height != null && weight != null) {
 
-        navigate("/userpage")
-    }
+        fetchData();
+    }, []);
+
+
 
     const handleBirthdayChange = (e) => {
-        const birthDate = new Date(e.target.value); 
-        const currentDate = new Date(); 
+        const birthDate = new Date(e.target.value);
+        const currentDate = new Date();
 
         const age = currentDate.getFullYear() - birthDate.getFullYear();
         const monthDifference = currentDate.getMonth() - birthDate.getMonth();
@@ -86,64 +101,68 @@ function CompleteUserProfile() {
 
     return (
         <div className="container d-flex justify-content-center align-items-center min-vh-100">
-            <div className="col-md-8 col-lg-6 p-4 shadow-lg rounded bg-light">
-                <h2 className="text-center mb-4">Edit Profile</h2>
-                <Form onSubmit={handleSubmitProfile}>
-                    <FormGroup>
-                        <Label for="date">
-                            Birthday
-                        </Label>
-                        <Input
-                            id="date"
-                            name="date"
-                            placeholder="Birthday"
-                            type="date"
-                            onChange={handleBirthdayChange}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label htmlFor="height">Height (m)</Label>
-                        <Input
-                            id="height"
-                            type="number"
-                            step="0.01"
-                            className="form-control"
-                            placeholder="1.75"
-                            min="50"
-                            max="210"
-                            value={height || ''}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                if (/^\d*\.?\d*$/.test(value)) {
-                                    setHeight(value);
-                                }
-                            }}
-                            required
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label htmlFor="weight">Weight (kg)</Label>
-                        <Input
-                            id="weight"
-                            type="number"
-                            step="0.1"
-                            className="form-control"
-                            placeholder="70"
-                            max="250"
-                            min="20"
-                            value={weight || ''}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                if (/^\d*\.?\d*$/.test(value)) {
-                                    setWeight(value);
-                                }
-                            }}
-                            required
-                        />
-                    </FormGroup>
-                    <Button className="btn btn-success w-100 py-2" type="submit" o>Submit</Button>
-                </Form>
-            </div>
+            {!isComplete &&
+
+
+                <div className="col-md-8 col-lg-6 p-4 shadow-lg rounded bg-light">
+                    <h2 className="text-center mb-4">Edit Profile</h2>
+                    <Form onSubmit={handleSubmitProfile}>
+                        <FormGroup>
+                            <Label for="date">
+                                Birthday
+                            </Label>
+                            <Input
+                                id="date"
+                                name="date"
+                                placeholder="Birthday"
+                                type="date"
+                                onChange={handleBirthdayChange}
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label htmlFor="height">Height (m)</Label>
+                            <Input
+                                id="height"
+                                type="number"
+                                step="0.01"
+                                className="form-control"
+                                placeholder="1.75"
+                                min="50"
+                                max="210"
+                                value={height || ''}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^\d*\.?\d*$/.test(value)) {
+                                        setHeight(value);
+                                    }
+                                }}
+                                required
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label htmlFor="weight">Weight (kg)</Label>
+                            <Input
+                                id="weight"
+                                type="number"
+                                step="0.1"
+                                className="form-control"
+                                placeholder="70"
+                                max="250"
+                                min="20"
+                                value={weight || ''}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^\d*\.?\d*$/.test(value)) {
+                                        setWeight(value);
+                                    }
+                                }}
+                                required
+                            />
+                        </FormGroup>
+                        <Button className="btn btn-success w-100 py-2" type="submit">Submit</Button>
+                    </Form>
+                </div>
+            }
         </div>
     );
 }
