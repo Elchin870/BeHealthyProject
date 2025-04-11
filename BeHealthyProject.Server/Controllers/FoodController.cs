@@ -84,4 +84,37 @@ public class FoodController : ControllerBase
         }
     }
 
+    [HttpGet("foods")]
+    public IActionResult GetFoods()
+    {
+        try
+        {
+            var foods = _context.Foods
+                .Select(f => new
+                {
+                    f.Id,
+                    f.Name,
+                    f.Calories,
+                    f.ProteinG,
+                    f.FatTotalG,
+                    f.CarbohydratesTotalG,
+                    f.CholesterolMg,
+                    f.PotassiumMg,
+                    f.SugarG
+                })
+                .ToList();
+
+            return Ok(foods);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                message = "Məlumatlar oxunarkən xəta baş verdi.",
+                details = ex.InnerException?.Message ?? ex.Message
+            });
+        }
+    }
+
+
 }

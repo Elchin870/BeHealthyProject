@@ -6,6 +6,8 @@ import DietitianPage from './components/DietitianPage';
 import LoginPageDietitian from './components/LoginPageDietitian';
 import LoginPageUser from './components/LoginPageUser';
 import CompleteUserProfile from './components/CompleteUserProfile';
+import UserPage from './components/UserPage';
+import UserProfile from './components/UserProfile';
 
 function App() {
     return (
@@ -18,7 +20,9 @@ function App() {
                 <Route path="/dietitianpage" element={<DietitianPage />} />
                 <Route path="/resetpassword" element={<ResetPassword />} />
                 <Route path="/completeuserprofile" element={<CompleteUserProfile />} />
-
+                <Route path="/userpage" element={<UserPage />} />
+                <Route path="/userprofile" element={<UserProfile />} />
+                
             </Routes>
         </Router>
     );
