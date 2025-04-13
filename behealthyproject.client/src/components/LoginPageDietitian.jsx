@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from 'react';
 import { Spinner } from 'reactstrap';
 import { Button } from 'reactstrap';
+import { jwtDecode } from "jwt-decode"
 
 function LoginPageDietitian() {
     const [username, setUsername] = useState("");
@@ -43,7 +44,16 @@ function LoginPageDietitian() {
 
             if (response.ok) {
                 const result = await response.json();
-                localStorage.setItem("token", result.token);
+                const token = result.token;
+                sessionStorage.setItem("token", token);
+
+                const decoded = jwtDecode(token);
+                const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                sessionStorage.setItem("role", role);
+
+                console.log("Token:", token);
+                console.log("Role:", role);
+
                 alert("Login successful!");
                 navigate("/dietitianpage");
             } else {

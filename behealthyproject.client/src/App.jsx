@@ -8,6 +8,9 @@ import LoginPageUser from './components/LoginPageUser';
 import CompleteUserProfile from './components/CompleteUserProfile';
 import UserPage from './components/UserPage';
 import UserProfile from './components/UserProfile';
+import ProtectedRoute from './components/ProtectedRoute';
+import Unauthorized from './components/Unauthorized';
+import Forbidden from './components/Forbidden';
 
 function App() {
     return (
@@ -17,16 +20,33 @@ function App() {
                 <Route path="/signin/dietitian" element={<LoginPageDietitian />} />
                 <Route path="/signup/user" element={<SignUpPageUser />} />
                 <Route path="/signup/dietitian" element={<SignUpPageDietitian />} />
-                <Route path="/dietitianpage" element={<DietitianPage />} />
                 <Route path="/resetpassword" element={<ResetPassword />} />
-                <Route path="/completeuserprofile" element={<CompleteUserProfile />} />
-                <Route path="/userpage" element={<UserPage />} />
-                <Route path="/userprofile" element={<UserProfile />} />
-                
+                <Route path="/unauthorized" element={<Unauthorized />} />
+                <Route path="/forbidden" element={<Forbidden />} />
+
+                <Route path="/dietitianpage" element={
+                    <ProtectedRoute requiredRole="dietitian">
+                        <DietitianPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/completeuserprofile" element={
+                    <ProtectedRoute requiredRole="user">
+                        <CompleteUserProfile />
+                    </ProtectedRoute>
+                } />
+                <Route path="/userpage" element={
+                    <ProtectedRoute requiredRole="user">
+                        <UserPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/userprofile" element={
+                    <ProtectedRoute requiredRole="user">
+                        <UserProfile />
+                    </ProtectedRoute>
+                } />
             </Routes>
         </Router>
     );
 }
 
 export default App;
-

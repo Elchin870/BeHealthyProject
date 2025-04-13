@@ -38,7 +38,8 @@ namespace BeHealthyProject.Server.Controllers
 			_cache = cache;
 		}
 
-		[HttpPost("signup-user")]
+        
+        [HttpPost("signup-user")]
 		public async Task<ActionResult> SignUpAsUser([FromBody] RegisterDto dto)
 		{
 			if (!ModelState.IsValid)
@@ -55,6 +56,7 @@ namespace BeHealthyProject.Server.Controllers
 				Nickname = dto.Nickname,
 				UserName = dto.Username,
 				Email = dto.Email,
+				
 			};
 			
 			var result = await _userManager.CreateAsync(user, dto.Password);
@@ -65,17 +67,19 @@ namespace BeHealthyProject.Server.Controllers
 					await _roleManager.CreateAsync(new IdentityRole("User"));
 				}
 				await _userManager.AddToRoleAsync(user, "User");
-				_beHealthyDbContext.AddAsync(user);
-				_beHealthyDbContext.SaveChangesAsync();
+				//await _beHealthyDbContext.AddAsync(user);
+				await _beHealthyDbContext.SaveChangesAsync();
 				return Ok(new
 				{
 					Status = "Success",
 					Message = "User created succesfully"
 				});
 			}
-			return BadRequest();
+			return BadRequest(result.Errors);
 		}
-		[HttpPost("signup-dietitian")]
+
+       
+        [HttpPost("signup-dietitian")]
 		public async Task<ActionResult> SignUpAsDietitian([FromBody] RegisterDto dto)
 		{
 			if (!ModelState.IsValid)
@@ -100,8 +104,10 @@ namespace BeHealthyProject.Server.Controllers
 					await _roleManager.CreateAsync(new IdentityRole("Dietitian"));
 				}
 				await _userManager.AddToRoleAsync(dietitian, "Dietitian");
+                //await _beHealthyDbContext.AddAsync(dietitian);
+                await _beHealthyDbContext.SaveChangesAsync();
 
-				return Ok(new
+                return Ok(new
 				{
 					Status = "Success",
 					Message = "Dietitian created succesfully"
@@ -110,7 +116,8 @@ namespace BeHealthyProject.Server.Controllers
 			return BadRequest();
 		}
 
-		[HttpPost("signin-user")]
+        
+        [HttpPost("signin-user")]
 		public async Task<IActionResult> SignInForUser([FromBody] LoginDto dto)
 		{
 			if (!ModelState.IsValid)
@@ -141,7 +148,8 @@ namespace BeHealthyProject.Server.Controllers
 			return Unauthorized();
 		}
 
-		[HttpPost("signin-dietitian")]
+       
+        [HttpPost("signin-dietitian")]
 		public async Task<IActionResult> SignInForDietitian([FromBody] LoginDto dto)
 		{
 			if (!ModelState.IsValid)
