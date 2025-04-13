@@ -23,6 +23,11 @@ function UserPage() {
   });
 
   const [selectedFoodOption, setSelectedFoodOption] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [recommendations, setRecommendations] = useState({
+    dailyCalories: 0,
+    waterMl: 0
+  });
 
   const meals = [
     { name: "Breakfast", icon: "bi-sun-fill", color: "#fbc02d" },
@@ -31,10 +36,36 @@ function UserPage() {
     { name: "Snacks/Other", icon: "bi-moon-fill", color: "#ba68c8" },
   ];
 
+
   useEffect(() => {
     axios.get('https://localhost:7148/foods')
       .then(res => setFoods(res.data))
       .catch(err => console.error("Error loading foods:", err));
+  }, []);
+
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+
+    axios.get('https://localhost:7148/api/User/get-profile', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => {
+        const { age, weight, height } = res.data;
+        setUserProfile({ age, weight, height });
+
+        const bmr = 66.47 + (13.75 * weight) + (5.003 * height) - (6.755 * age); 
+        const tdee = bmr * 1.2; 
+        const water = weight * 35; 
+
+        setRecommendations({
+          dailyCalories: Math.round(tdee),
+          waterMl: Math.round(water)
+        });
+      })
+      .catch(err => console.error("Error loading user profile:", err));
   }, []);
 
   const updateTotals = (food, action = 'add') => {
@@ -89,15 +120,9 @@ function UserPage() {
         <div className="container-fluid">
           <a className="navbar-brand" href="/userpage">BeHealthy</a>
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-row gap-3">
-            <li className="nav-item">
-              <a className="nav-link active" href="/userpage">Home</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/userprofile">Profile</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#">Chat</a>
-            </li>
+            <li className="nav-item"><a className="nav-link active" href="/userpage">Home</a></li>
+            <li className="nav-item"><a className="nav-link" href="/userprofile">Profile</a></li>
+            <li className="nav-item"><a className="nav-link" href="#">Chat</a></li>
           </ul>
         </div>
       </nav>
@@ -111,10 +136,22 @@ function UserPage() {
           </div>
         </div>
         <small>
-          Fat: {totals.fat.toFixed(1)}g, Carbs: {totals.carbs.toFixed(1)}g, 
+          Fat: {totals.fat.toFixed(1)}g, Carbs: {totals.carbs.toFixed(1)}g,
           Protein: {totals.protein.toFixed(1)}g, Sugar: {totals.sugar.toFixed(1)}g
         </small>
       </div>
+
+      {userProfile && (
+        <div className="mb-4 p-4 rounded-4 shadow" style={{ backgroundColor: '#3a4049' }}>
+          <h4 className="mb-3 fw-bold text-info">🧠 Daily Recommendations</h4>
+          <p className="mb-1">
+            🔥 <strong>Suggested Calories:</strong> <span className="text-warning">{recommendations.dailyCalories} kcal</span>
+          </p>
+          <p className="mb-0">
+            💧 <strong>Water Intake:</strong> <span className="text-primary">{(recommendations.waterMl / 1000).toFixed(2)} L</span>
+          </p>
+        </div>
+      )}
 
       {meals.map((meal, index) => (
         <div
@@ -158,7 +195,7 @@ function UserPage() {
                 value={selectedFoodOption}
                 onChange={handleFoodSelect}
                 options={foodOptions}
-                placeholder="Yemək seçin..."
+                placeholder="Select food..."
                 isSearchable
                 styles={{
                   control: (base) => ({

@@ -3,7 +3,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function UserProfile() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const [profileData, setProfileData] = useState({
         age: '',
         height: '',

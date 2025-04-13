@@ -16,7 +16,7 @@ function CompleteUserProfile() {
     const [isComplete, setIsComplete] = useState();
 
 
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
 
 
