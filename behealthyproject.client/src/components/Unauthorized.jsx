@@ -6,7 +6,7 @@ const Unauthorized = () => (
             <div className="mt-5">
                 <p className="text-white" style={
                     {
-                        marginTop: "12em",
+                        marginTop: "18em",
                         marginLeft:"1em",
                         fontSize:"23px"
                     }
