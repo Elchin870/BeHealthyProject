@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function UserProfile() {
+    const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const [profileData, setProfileData] = useState({
         age: '',
         height: '',
         weight: '',
+        username: '',
+        nickname: ''
     });
     const [originalProfileData, setOriginalProfileData] = useState({
         age: '',
@@ -26,20 +30,24 @@ function UserProfile() {
                 setProfileData({
                     age: response.data.age,
                     height: response.data.height,
-                    weight: response.data.weight
+                    weight: response.data.weight,
+                    username: response.data.username,
+                    nickname: response.data.nickname
                 });
                 setOriginalProfileData({
                     age: response.data.age,
                     height: response.data.height,
-                    weight: response.data.weight
+                    weight: response.data.weight,
+                    username: response.data.username,
+                    nickname: response.data.nickname
                 });
                 setLoading(false);
             })
             .catch(error => {
                 console.error("Error fetching profile:", error);
-                setLoading(false); 
+                setLoading(false);
             });
-    }, [token]);  
+    }, [token]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -89,6 +97,26 @@ function UserProfile() {
             <h2>Profile Information</h2>
             <div className="card p-4" style={{ backgroundColor: '#f8f9fa' }}>
                 <div className="mb-3">
+                    <label className="form-label">Username</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="username"
+                        value={profileData.username}
+                        onChange={handleInputChange}
+                    />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Nickname</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="nickname"
+                        value={profileData.nickname}
+                        disabled
+                    />
+                </div>
+                <div className="mb-3">
                     <label className="form-label">Age</label>
                     <input
                         type="number"
@@ -122,13 +150,20 @@ function UserProfile() {
                     <button className="btn btn-secondary" onClick={() => setProfileData(originalProfileData)}>
                         Cancel
                     </button>
+                    <button className="btn btn-danger" onClick={() => {
+                        sessionStorage.removeItem('token');
+                        navigate('/');
+                    }}>
+                        Logout
+                    </button>
                     <button
                         className="btn btn-success"
                         onClick={handleSaveChanges}
                         disabled={
                             profileData.age === originalProfileData.age &&
                             profileData.height === originalProfileData.height &&
-                            profileData.weight === originalProfileData.weight
+                            profileData.weight === originalProfileData.weight &&
+                            profileData.username === originalProfileData.username
                         }
                     >
                         Save Changes

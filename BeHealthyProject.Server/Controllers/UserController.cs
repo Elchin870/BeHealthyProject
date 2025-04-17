@@ -8,70 +8,100 @@ using System.Security.Claims;
 
 namespace BeHealthyProject.Server.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	[Authorize(Roles = "User")]
-	public class UserController : ControllerBase
-	{
-		private readonly UserManager<BaseUser> _userManager;
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize(Roles = "User")]
+    public class UserController : ControllerBase
+    {
+        private readonly UserManager<BaseUser> _userManager;
 
-		public UserController(UserManager<BaseUser> userManager)
-		{
-			_userManager = userManager;
-		}
+        public UserController(UserManager<BaseUser> userManager)
+        {
+            _userManager = userManager;
+        }
 
-		[HttpPut("update-profile")]
-		public async Task<ActionResult> UpdateProfile([FromBody] UpdateUserProfileDto dto)
-		{
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if (string.IsNullOrEmpty(userId))
-			{
-				return Unauthorized("Invalid token.");
-			}
+        [HttpPut("update-profile")]
+        public async Task<ActionResult> UpdateProfile([FromBody] UpdateUserProfileDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Invalid token.");
+            }
 
-			var baseUser = await _userManager.FindByIdAsync(userId);
-			var user = baseUser as User;
+            var baseUser = await _userManager.FindByIdAsync(userId);
+            var user = baseUser as User;
 
-			if (user == null)
-			{
-				return NotFound("User not found!");
-			}
+            if (user == null)
+            {
+                return NotFound("User not found!");
+            }
 
-			if (dto.Height != null || dto.Height != 0 && dto.Age != null || dto.Age != 0 && dto.Weight != null || dto.Weight != 0)
-			{
-				user.Height = dto.Height;
-				user.Weight = dto.Weight;
-				user.Age = dto.Age;
+            if (dto.Height != null || dto.Height != 0 && dto.Age != null || dto.Age != 0 && dto.Weight != null || dto.Weight != 0)
+            {
+                user.Height = dto.Height;
+                user.Weight = dto.Weight;
+                user.Age = dto.Age;
 
-			}
+            }
 
 
-			var result = await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
 
-			if (result.Succeeded)
-			{
-				user.IsCompleteProfile = true;
+            if (result.Succeeded)
+            {
+                user.IsCompleteProfile = true;
                 await _userManager.UpdateAsync(user);
                 return Ok(new { message = "Profile updated successfully!" });
-			}
-			else
-			{
-				return BadRequest(new { message = "Failed to update profile", errors = result.Errors });
-			}
+            }
+            else
+            {
+                return BadRequest(new { message = "Failed to update profile", errors = result.Errors });
+            }
 
-		}
-		[HttpGet("get-profile")]
-		public async Task<ActionResult> GetProfileData()
-		{
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if (userId == null)
-			{
-				return NotFound("User not found!");
-			}
-			var baseUser = await _userManager.FindByIdAsync(userId);
-			var user = baseUser as User;
-			if (user == null) { return NotFound(); }
-			return Ok(new UpdateUserProfileDto { Age = user.Age, Height = user.Height, Weight = user.Weight, IsCompleteProfile = user.IsCompleteProfile });
-		}
-	}
+        }
+        [HttpGet("get-profile")]
+        public async Task<ActionResult> GetProfileData()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return NotFound("User not found!");
+            }
+            var baseUser = await _userManager.FindByIdAsync(userId);
+            var user = baseUser as User;
+            if (user == null) { return NotFound(); }
+            return Ok(new UpdateUserProfileDto { Age = user.Age, Height = user.Height, Weight = user.Weight, IsCompleteProfile = user.IsCompleteProfile, Nickname = user.Nickname, Username = user.UserName });
+        }
+
+
+        [HttpGet("check-availability")]
+        [AllowAnonymous] 
+        public async Task<IActionResult> CheckAvailability(string? email, string? nickname)
+        {
+            if (string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(nickname))
+                return BadRequest("At least email or nickname must be provided.");
+
+            bool emailAvailable = true;
+            bool nicknameAvailable = true;
+
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                var emailExists = await _userManager.FindByEmailAsync(email);
+                if (emailExists != null)
+                    emailAvailable = false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(nickname))
+            {
+                var nicknameExists = _userManager.Users.OfType<User>().Any(u => u.Nickname == nickname);
+                if (nicknameExists)
+                    nicknameAvailable = false;
+            }
+
+            return Ok(new { emailAvailable, nicknameAvailable });
+        }
+
+
+    }
 }

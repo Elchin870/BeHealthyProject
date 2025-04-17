@@ -28,23 +28,3 @@ Chicken Parmesan
 Beef Stew
 Beef Stir Fry
 Pork Chops
-Veggie Stir Fry
-Chili
-Clam Chowder
-Grilled Cheese
-BLT Sandwich
-Peanut Butter and Jelly Sandwich
-Tuna Salad
-Falafel
-Hummus and Pita
-Quesadilla
-Veggie Burger
-Cobb Salad
-Chicken Fajitas
-Beef Tacos
-Fish and Chips
-Turkey Sandwich
-Grilled Shrimp
-Croissant
-Quiche
-Muffins
