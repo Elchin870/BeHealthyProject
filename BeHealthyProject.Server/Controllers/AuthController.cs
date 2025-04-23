@@ -1,4 +1,7 @@
-﻿using BeHealthyProject.Entities;
+﻿using BeHealthyProject.BusinessLayer.Abstract;
+using BeHealthyProject.BusinessLayer.Concrete;
+using BeHealthyProject.Entities;
+using BeHealthyProject.Entities.Dtos;
 using BeHealthyProject.Server.Data;
 using BeHealthyProject.Server.Dtos;
 using MailKit.Net.Smtp;
@@ -28,18 +31,20 @@ namespace BeHealthyProject.Server.Controllers
         private readonly BeHealthyDbContext _beHealthyDbContext;
         private readonly IConfiguration _configuration;
         private readonly IDistributedCache _cache;
+        private readonly IDietitianService _dietitianService;
 
-        public AuthController(UserManager<BaseUser> userManager, RoleManager<IdentityRole> roleManager, BeHealthyDbContext beHealthyDbContext, IConfiguration configuration, IDistributedCache cache)
-        {
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _beHealthyDbContext = beHealthyDbContext;
-            _configuration = configuration;
-            _cache = cache;
-        }
+		public AuthController(UserManager<BaseUser> userManager, RoleManager<IdentityRole> roleManager, BeHealthyDbContext beHealthyDbContext, IConfiguration configuration, IDistributedCache cache, IDietitianService dietitianService)
+		{
+			_userManager = userManager;
+			_roleManager = roleManager;
+			_beHealthyDbContext = beHealthyDbContext;
+			_configuration = configuration;
+			_cache = cache;
+			_dietitianService = dietitianService;
+		}
 
 
-        [HttpPost("signup-user")]
+		[HttpPost("signup-user")]
         public async Task<ActionResult> SignUpAsUser([FromBody] RegisterDto dto)
         {
             if (!ModelState.IsValid)
@@ -314,6 +319,13 @@ namespace BeHealthyProject.Server.Controllers
 
             return Ok($"Hello {name}, you are authenticated as a {role}!");
         }
-    }
+		[HttpGet("Dietitians")]
+		public async Task<ActionResult<List<ShowDietitianDto>>> GetDietitians()
+		{
+			var dietitians = await _dietitianService.GetDietitians();
+			return dietitians;
+		}
+
+	}
 
 }

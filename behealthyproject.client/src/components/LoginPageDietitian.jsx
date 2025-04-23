@@ -55,7 +55,7 @@ function LoginPageDietitian() {
                 console.log("Role:", role);
 
                 alert("Login successful!");
-                navigate("/dietitianpage");
+                navigate("/completedietitianprofile");
             } else {
                 alert("Invalid credentials.");
             }
