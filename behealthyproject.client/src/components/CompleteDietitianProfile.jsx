@@ -114,8 +114,9 @@ function CompleteDietitianProfile() {
     }, []);
 
     return (
-        <>
-            {!isComplete &&
+        <div className="signuppageimg"> 
+            {!isComplete && 
+
                 <div className="container d-flex justify-content-center align-items-center min-vh-100">
                     <div className="col-md-8 col-lg-6 p-4 shadow-lg rounded bg-light">
                         <h2 className="text-center mb-4">Complete Profile</h2>
@@ -177,7 +178,7 @@ function CompleteDietitianProfile() {
                     </div>
                 </div>
             }
-        </>
+        </div>
     );
 }
 
