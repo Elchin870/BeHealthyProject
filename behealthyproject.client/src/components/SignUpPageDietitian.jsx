@@ -11,6 +11,10 @@ function SignUpPageDietitian() {
     const [password, setPassword] = useState('');
     //const [file, setFile] = useState(null);
 
+    const goToDietitianLoginPage = () => {
+        navigate('/signin/dietitian');
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const response = await fetch("https://localhost:7148/api/Auth/signup-dietitian", {
@@ -31,32 +35,35 @@ function SignUpPageDietitian() {
     };
 
     return (
-        <div className="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
-            <div className="row w-100 shadow-lg rounded p-5 bg-white">
-                <div className="col-md-12 text-center">
-                    <h2 className="mb-4 display-4 fw-bold">Dietitian Sign Up</h2>
-                    <form onSubmit={handleSubmit}>
+        <div className="signuppageimg" >
+            <div className="container d-flex justify-content-center align-items-center min-vh-100 ">
+                <div className="row w-100 shadow-lg rounded p-5 bg-white">
+                    <div className="col-md-12 text-center">
+                        <h2 className="mb-4 display-4 fw-bold">Dietitian Sign Up</h2>
+                        <form onSubmit={handleSubmit}>
 
-                        <div className="mb-4">
-                            <input type="text" className="form-control" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-                        </div>
-                        <div className="mb-4">
-                            <input type="text" className="form-control" placeholder="Nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
-                        </div>
-                        <div className="mb-4">
-                            <input type="email" className="form-control" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                        </div>
-                        <div className="mb-4">
-                            <input type="password" className="form-control" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                        </div>
-                        {/*<div className="mb-4">*/}
-                        {/*    <input type="text" className="form-control" placeholder="Education" value={education} onChange={(e) => setEducation(e.target.value)} />*/}
-                        {/*</div>*/}
-                        <div className="mb-4">
-                            {/*<input type="file" className="form-control" onChange={(e) => setFile(e.target.files[0])} />*/}
-                        </div>
-                        <button type="submit" className="btn btn-success btn-lg w-100">Sign Up</button>
-                    </form>
+                            <div className="mb-4">
+                                <input type="text" className="form-control" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                            </div>
+                            <div className="mb-4">
+                                <input type="text" className="form-control" placeholder="Nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
+                            </div>
+                            <div className="mb-4">
+                                <input type="email" className="form-control" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                            </div>
+                            <div className="mb-4">
+                                <input type="password" className="form-control" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                            </div>
+                            {/*<div className="mb-4">*/}
+                            {/*    <input type="text" className="form-control" placeholder="Education" value={education} onChange={(e) => setEducation(e.target.value)} />*/}
+                            {/*</div>*/}
+                            <div className="mb-4">
+                                {/*<input type="file" className="form-control" onChange={(e) => setFile(e.target.files[0])} />*/}
+                            </div>
+                            <button type="submit" className="btn btn-success btn-lg w-100">Sign Up</button>
+                        </form>
+                        <button className="text-end btn btn-primary mt-3 mb-0" onClick={goToDietitianLoginPage}>If you have account</button>
+                    </div>
                 </div>
             </div>
         </div>

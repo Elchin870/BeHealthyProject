@@ -14,6 +14,14 @@
     display: flex;
     color: black;
 }
+.signuppageimg {
+    background-image: url('../public/images/light-blue-yellow-gradient-blur-background-vector.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    color: black;
+}
 
 
 
