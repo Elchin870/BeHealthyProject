@@ -1,4 +1,5 @@
-﻿using BeHealthyProject.Entities;
+﻿using BeHealthyProject.BusinessLayer.Concrete;
+using BeHealthyProject.Entities;
 using BeHealthyProject.Server.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +15,7 @@ namespace BeHealthyProject.Server.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<BaseUser> _userManager;
+        private readonly DietitianService _dietitianService;
 
         public UserController(UserManager<BaseUser> userManager)
         {
@@ -77,7 +79,7 @@ namespace BeHealthyProject.Server.Controllers
 
         [HttpGet("check-availability")]
         [AllowAnonymous] 
-        public async Task<IActionResult> CheckAvailability(string? email, string? nickname)
+        public async Task<ActionResult> CheckAvailability(string? email, string? nickname)
         {
             if (string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(nickname))
                 return BadRequest("At least email or nickname must be provided.");
@@ -101,7 +103,6 @@ namespace BeHealthyProject.Server.Controllers
 
             return Ok(new { emailAvailable, nicknameAvailable });
         }
-
-
+        
     }
 }

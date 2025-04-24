@@ -27,7 +27,7 @@ function SignUpPageDietitian() {
 
         if (response.ok) {
             alert("Register successful!");
-            navigate("/");
+            navigate("/signin/dietitian");
         } else {
             alert("Invalid credentials.");
         }

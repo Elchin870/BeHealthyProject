@@ -1,3 +1,5 @@
+using BeHealthyProject.BusinessLayer.Abstract;
+using BeHealthyProject.BusinessLayer.Concrete;
 using BeHealthyProject.Entities;
 using BeHealthyProject.Server.Data;
 using BeHealthyProject.Server.Middlewares;
@@ -79,6 +81,7 @@ builder.Services.AddAuthorization(options =>
 		policy.RequireRole("User");
 	});
 });
+builder.Services.AddScoped<IDietitianService,DietitianService>();
 
 var app = builder.Build();
 
