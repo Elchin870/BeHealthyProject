@@ -12,6 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Unauthorized from './components/Unauthorized';
 import Forbidden from './components/Forbidden';
 import CompleteDietitianProfile from './components/CompleteDietitianProfile';
+import DietitianProfile from './components/DietitianProfile';
 
 function App() {
     return (
@@ -48,6 +49,11 @@ function App() {
                 <Route path="/userprofile" element={
                     <ProtectedRoute requiredRole="user">
                         <UserProfile />
+                    </ProtectedRoute>
+                } />
+                <Route path="/dietitianprofile" element={
+                    <ProtectedRoute requiredRole="dietitian">
+                        <DietitianProfile />
                     </ProtectedRoute>
                 } />
             </Routes>

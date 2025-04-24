@@ -158,7 +158,7 @@ function CompleteDietitianProfile() {
                                 <Input
                                     id="experience"
                                     type="number"
-                                    step="0.1"
+                                    step="0.5"
                                     className="form-control"
                                     placeholder="3"
                                     max="75"

@@ -3,43 +3,43 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function UserProfile() {
+function DietitianProfile() {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const [profileData, setProfileData] = useState({
-        age: '',
-        height: '',
-        weight: '',
+        certifications: [],
+        experience: 0,
+        specialization: "",
         username: '',
         nickname: ''
     });
     const [originalProfileData, setOriginalProfileData] = useState({
-        age: '',
-        height: '',
-        weight: '',
+        certifications: [],
+        experience: 0,
+        specialization: ""
     });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('https://localhost:7148/api/User/get-profile', {
+        axios.get('https://localhost:7148/api/Dietitian/get-profile', {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         })
             .then(response => {
                 setProfileData({
-                    age: response.data.age,
-                    height: response.data.height,
-                    weight: response.data.weight,
                     username: response.data.username,
-                    nickname: response.data.nickname
+                    nickname: response.data.nickname,
+                    certifications: response.data.certifications,
+                    experience: response.data.experience,
+                    specialization: response.data.specialization,
                 });
                 setOriginalProfileData({
-                    age: response.data.age,
-                    height: response.data.height,
-                    weight: response.data.weight,
                     username: response.data.username,
-                    nickname: response.data.nickname
+                    nickname: response.data.nickname,
+                    certifications: response.data.certifications,
+                    experience: response.data.experience,
+                    specialization: response.data.specialization,
                 });
                 setLoading(false);
             })
@@ -58,7 +58,7 @@ function UserProfile() {
     };
 
     const handleSaveChanges = () => {
-        axios.put('https://localhost:7148/api/User/update-profile', profileData, {
+        axios.put('https://localhost:7148/api/Dietitian/update-profile', profileData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -83,10 +83,10 @@ function UserProfile() {
                     <a className="navbar-brand" href="/userpage">BeHealthy</a>
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-row gap-3">
                         <li className="nav-item">
-                            <a className="nav-link active" href="/userpage">Home</a>
+                            <a className="nav-link active" href="/dietitianpage">Home</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="/userprofile">Profile</a>
+                            <a className="nav-link" href="/dietitianprofile">Profile</a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="#">Chat</a>
@@ -118,42 +118,44 @@ function UserProfile() {
                         />
                     </div>
                     <div className="mb-3">
-                        <label className="form-label">Age</label>
+                        <label className="form-label">Experience</label>
                         <input
                             type="number"
                             className="form-control"
-                            name="age"
-                            value={profileData.age}
+                            name="experience"
+                            value={profileData.experience}
                             onChange={handleInputChange}
                         />
                     </div>
                     <div className="mb-3">
-                        <label className="form-label">Height (cm)</label>
+                        <label className="form-label">Specializaton</label>
                         <input
-                            type="number"
+                            type="text"
                             className="form-control"
-                            name="height"
-                            value={profileData.height}
+                            name="specialization"
+                            value={profileData.specialization}
                             onChange={handleInputChange}
+                            disabled
                         />
                     </div>
                     <div className="mb-3">
-                        <label className="form-label">Weight (kg)</label>
+                        <label className="form-label">Certifications</label>
                         <input
-                            type="number"
+                            type="text"
                             className="form-control"
-                            name="weight"
-                            value={profileData.weight}
+                            name="certifications"
+                            value={profileData.certifications}
                             onChange={handleInputChange}
                         />
                     </div>
                     <div className="d-flex justify-content-between">
                         <button className="btn btn-secondary" onClick={() => setProfileData(originalProfileData)}>
                             Cancel
+                            
                         </button>
                         <button className="btn btn-danger" onClick={() => {
                             sessionStorage.removeItem('token');
-                            navigate('/');
+                            navigate('/signin/dietitian');
                         }}>
                             Logout
                         </button>
@@ -161,9 +163,9 @@ function UserProfile() {
                             className="btn btn-success"
                             onClick={handleSaveChanges}
                             disabled={
-                                profileData.age === originalProfileData.age &&
-                                profileData.height === originalProfileData.height &&
-                                profileData.weight === originalProfileData.weight &&
+                                profileData.specialization === originalProfileData.specialization &&
+                                profileData.experience === originalProfileData.experience &&
+                                profileData.certifications === originalProfileData.certifications &&
                                 profileData.username === originalProfileData.username
                             }
                         >
@@ -176,4 +178,4 @@ function UserProfile() {
     );
 }
 
-export default UserProfile;
+export default DietitianProfile;
