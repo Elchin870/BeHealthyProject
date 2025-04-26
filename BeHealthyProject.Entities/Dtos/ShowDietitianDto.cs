@@ -8,11 +8,13 @@ namespace BeHealthyProject.Entities.Dtos
 {
 	public class ShowDietitianDto
 	{
-		public string Username { get; set; }
+        public string Id { get; set; }
+        public string Username { get; set; }
 		public string? Nickname { get; set; }
-		public string? Specialization { get; set; }
+        public double? Price { get; set; }
+        public string? Specialization { get; set; }
 		public List<string> Certifications { get; set; } = new List<string>();
 		public int? Experience { get; set; }
-        public bool isComplete { get; set; }
+		public bool isComplete { get; set; } = false;
     }
 }

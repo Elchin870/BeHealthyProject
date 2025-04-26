@@ -109,7 +109,6 @@ namespace BeHealthyProject.Server.Controllers
                     await _roleManager.CreateAsync(new IdentityRole("Dietitian"));
                 }
                 await _userManager.AddToRoleAsync(dietitian, "Dietitian");
-                //await _beHealthyDbContext.AddAsync(dietitian);
                 await _beHealthyDbContext.SaveChangesAsync();
 
                 return Ok(new

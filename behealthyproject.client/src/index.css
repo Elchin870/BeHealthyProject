@@ -7,7 +7,7 @@
     color: black;
 }
 .unauthorizeimg {
-    background-image: url('/public/images/what-is-a-401-error.png');
+    background-image: url('/images/what-is-a-401-error.png');
     background-size: cover;
     background-position: center;
     height: 100vh;
@@ -15,7 +15,7 @@
     color: black;
 }
 .signuppageimg {
-    background-image: url('../public/images/light-blue-yellow-gradient-blur-background-vector.jpg');
+    background-image: url('/images/light-blue-yellow-gradient-blur-background-vector.jpg');
     background-size: cover;
     background-position: center;
     height: 100vh;

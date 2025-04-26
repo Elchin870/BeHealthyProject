@@ -1,5 +1,7 @@
-﻿using BeHealthyProject.BusinessLayer.Concrete;
+﻿using BeHealthyProject.BusinessLayer.Abstract;
+using BeHealthyProject.BusinessLayer.Concrete;
 using BeHealthyProject.Entities;
+using BeHealthyProject.Entities.Dtos;
 using BeHealthyProject.Server.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,18 +13,19 @@ namespace BeHealthyProject.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "User")]
+    //[Authorize(Roles = "User")]
     public class UserController : ControllerBase
     {
         private readonly UserManager<BaseUser> _userManager;
-        private readonly DietitianService _dietitianService;
+        private readonly IDietitianService _dietitianService;
 
-        public UserController(UserManager<BaseUser> userManager)
-        {
-            _userManager = userManager;
-        }
+		public UserController(UserManager<BaseUser> userManager, IDietitianService dietitianService)
+		{
+			_userManager = userManager;
+			_dietitianService = dietitianService;
+		}
 
-        [HttpPut("update-profile")]
+		[HttpPut("update-profile")]
         public async Task<ActionResult> UpdateProfile([FromBody] UpdateUserProfileDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -76,6 +79,12 @@ namespace BeHealthyProject.Server.Controllers
             return Ok(new UpdateUserProfileDto { Age = user.Age, Height = user.Height, Weight = user.Weight, IsCompleteProfile = user.IsCompleteProfile, Nickname = user.Nickname, Username = user.UserName });
         }
 
+        [HttpGet("get-dietitians")]
+        public Task<List<ShowDietitianDto>> GetDietitians()
+        {
+            var dietitians = _dietitianService.GetDietitians();
+            return dietitians;
+        }
 
         [HttpGet("check-availability")]
         [AllowAnonymous] 

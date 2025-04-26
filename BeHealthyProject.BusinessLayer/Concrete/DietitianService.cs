@@ -27,11 +27,14 @@ namespace BeHealthyProject.BusinessLayer.Concrete
 				.OfType<Dietitian>()
 				.Select(d => new ShowDietitianDto
 				{
+					Id=d.Id,
 					Username = d.UserName,
 					Nickname = d.Nickname,
 					Certifications = d.Certifications,
 					Specialization = d.Specialization,
-					Experience = d.Experience
+					Experience = d.Experience,
+					Price = d.Price,
+					isComplete = d.IsCompleteProfile
 				});
 			return dietitians.ToList();
 		}

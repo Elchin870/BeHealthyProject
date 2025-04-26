@@ -123,7 +123,7 @@ function UserPage() {
                         <li className="nav-item"><a className="nav-link active" href="/userpage">Home</a></li>
                         <li className="nav-item"><a className="nav-link" href="/userprofile">Profile</a></li>
                         <li className="nav-item"><a className="nav-link" href="#">Posts</a></li>
-                        <li className="nav-item"><a className="nav-link" href="#">Dietitians</a></li>
+                        <li className="nav-item"><a className="nav-link" href="/dietitianslist">Dietitians</a></li>
                     </ul>
                 </div>
             </nav>
@@ -154,6 +154,7 @@ function UserPage() {
                 </div>
             )}
 
+        
             {meals.map((meal, index) => (
                 <div
                     key={index}

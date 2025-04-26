@@ -9,7 +9,6 @@ function SignUpPageDietitian() {
     const [nickname, setNickname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    //const [file, setFile] = useState(null);
 
     const goToDietitianLoginPage = () => {
         navigate('/signin/dietitian');

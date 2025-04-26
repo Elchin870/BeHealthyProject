@@ -9,6 +9,7 @@ function DietitianProfile() {
     const [profileData, setProfileData] = useState({
         certifications: [],
         experience: 0,
+        price:0,
         specialization: "",
         username: '',
         nickname: ''
@@ -16,6 +17,7 @@ function DietitianProfile() {
     const [originalProfileData, setOriginalProfileData] = useState({
         certifications: [],
         experience: 0,
+        price:0,
         specialization: ""
     });
     const [loading, setLoading] = useState(true);
@@ -33,12 +35,14 @@ function DietitianProfile() {
                     certifications: response.data.certifications,
                     experience: response.data.experience,
                     specialization: response.data.specialization,
+                    price: response.data.price,
                 });
                 setOriginalProfileData({
                     username: response.data.username,
                     nickname: response.data.nickname,
                     certifications: response.data.certifications,
                     experience: response.data.experience,
+                    price: response.data.price,
                     specialization: response.data.specialization,
                 });
                 setLoading(false);
@@ -124,6 +128,16 @@ function DietitianProfile() {
                             className="form-control"
                             name="experience"
                             value={profileData.experience}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label">Price</label>
+                        <input
+                            type="number"
+                            className="form-control"
+                            name="price"
+                            value={profileData.price}
                             onChange={handleInputChange}
                         />
                     </div>

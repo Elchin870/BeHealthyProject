@@ -44,6 +44,7 @@ namespace BeHealthyProject.Server.Controllers
 				user.Experience = dto.Experience;
 				user.Specialization = dto.Specialization;
 				user.Certifications = dto.Certifications;
+				user.Price = dto.Price;
 
 			}
 
@@ -73,7 +74,7 @@ namespace BeHealthyProject.Server.Controllers
 			var baseUser = await _userManager.FindByIdAsync(userId);
 			var user = baseUser as Dietitian;
 			if (user == null) { return NotFound(); }
-			return Ok(new ShowDietitianDto { Specialization = user.Specialization, Experience = user.Experience, Certifications = user.Certifications, Nickname = user.Nickname, Username = user.UserName, isComplete=user.IsCompleteProfile});
+			return Ok(new ShowDietitianDto { Specialization = user.Specialization, Experience = user.Experience, Certifications = user.Certifications, Nickname = user.Nickname, Username = user.UserName, isComplete=user.IsCompleteProfile, Price = user.Price});
 		}
 
 	}

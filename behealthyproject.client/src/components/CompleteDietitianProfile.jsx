@@ -15,6 +15,7 @@ function CompleteDietitianProfile() {
     const [certifications, setCertifications] = useState([]);
     const [certificationInput, setCertificationInput] = useState('');
     const [experience, setExperience] = useState(null);
+    const [price, setPrice] = useState(null);
     const [isComplete, setIsComplete] = useState();
 
     const specializationOptions = [
@@ -63,7 +64,9 @@ function CompleteDietitianProfile() {
             body: JSON.stringify({
                 specialization,
                 certifications,
-                experience
+                experience,
+                price
+                
             })
         });
 
@@ -102,6 +105,7 @@ function CompleteDietitianProfile() {
                             ? data.certifications.split(',').map(c => c.trim())
                             : []);
                     setIsComplete(data.isComplete);
+                    setPrice(data.price);
                 } else {
                     alert("Invalid credentials.");
                 }
@@ -167,6 +171,23 @@ function CompleteDietitianProfile() {
                                         setExperience(Number(v.target.value));
                                     }}
                                     value={experience || ''}
+                                    required
+                                />
+                            </FormGroup>
+                            <FormGroup>
+                                <Label htmlFor="price">Price (USD)</Label>
+                                <Input
+                                    id="price"
+                                    type="number"
+                                    step="0.5"
+                                    className="form-control"
+                                    placeholder="19,99"
+                                    max="100"
+                                    min="1"
+                                    onChange={(v) => {
+                                        setPrice(Number(v.target.value));
+                                    }}
+                                    value={price || ''}
                                     required
                                 />
                             </FormGroup>
