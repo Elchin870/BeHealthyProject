@@ -14,6 +14,7 @@ import Forbidden from './components/Forbidden';
 import CompleteDietitianProfile from './components/CompleteDietitianProfile';
 import DietitianProfile from './components/DietitianProfile';
 import DietitiansListForUser from './components/DietitiansListForUser';
+import CreateProgramPage from './components/CreateProgramPage';
 
 function App() {
     return (
@@ -55,6 +56,11 @@ function App() {
                 <Route path="/dietitianslist" element={
                     <ProtectedRoute requiredRole="user">
                         <DietitiansListForUser />
+                    </ProtectedRoute>
+                } />
+                <Route path="/createprogram" element={
+                    <ProtectedRoute requiredRole="dietitian">
+                        <CreateProgramPage />
                     </ProtectedRoute>
                 } />
                 <Route path="/dietitianprofile" element={
