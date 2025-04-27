@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { Snackbar, Alert } from '@mui/material';
 
 function SignUpPage() {
     const [username, setUsername] = useState('');
@@ -12,6 +13,9 @@ function SignUpPage() {
     const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
     const [isNicknameAvailable, setIsNicknameAvailable] = useState(true);
     const [isEmailAvailable, setIsEmailAvailable] = useState(true);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const navigate = useNavigate();
 
@@ -23,7 +27,9 @@ function SignUpPage() {
         e.preventDefault();
 
         if (!isNicknameAvailable || !isEmailAvailable) {
-            alert("Email or nickname is already in use.");
+            setSnackbarMessage('Email or Nickname is already use!!!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
             return;
         }
 
@@ -36,10 +42,16 @@ function SignUpPage() {
         });
 
         if (response.ok) {
-            alert("Register successful!");
-            navigate("/");
+            setSnackbarMessage('Login successful!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+            setTimeout(() => {
+                navigate("/");
+            }, 2000);
         } else {
-            alert("Invalid credentials.");
+            setSnackbarMessage('Invalid credentials.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     };
 
@@ -148,7 +160,27 @@ function SignUpPage() {
                     <button className="text-end btn btn-primary mt-3 mb-0" onClick={goToLoginPage}>If you have account</button>
                 </div>
             </div>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setOpenSnackbar(false)}
+                    severity={snackbarSeverity}
+                    sx={{
+                        width: '100%',
+                        fontSize: '1.25rem',
+                        padding: '16px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </div>
+
     );
 }
 

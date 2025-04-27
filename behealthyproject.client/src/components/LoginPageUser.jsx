@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Spinner } from 'reactstrap';
 import { Button } from 'reactstrap';
 import { jwtDecode } from "jwt-decode"
+import { Snackbar, Alert } from '@mui/material';
+
 
 function LoginPageUser() {
     const [username, setUsername] = useState("");
@@ -11,6 +13,10 @@ function LoginPageUser() {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success'); 
+
 
     const navigate = useNavigate();
 
@@ -49,11 +55,19 @@ function LoginPageUser() {
                 console.log("Token:", token);
                 console.log("Role:", role);
 
-                alert("Login successful!");
-                navigate("/completeuserprofile");
+                setSnackbarMessage('Login successful!');
+                setSnackbarSeverity('success');
+                setOpenSnackbar(true);
+                setTimeout(() => {
+                    navigate("/completeuserprofile");
+                }, 2000);
+
             } else {
-                alert("Invalid credentials.");
+                setSnackbarMessage('Invalid credentials.');
+                setSnackbarSeverity('error');
+                setOpenSnackbar(true);
             }
+
         } finally {
             setLoading(false);
         }
@@ -69,11 +83,16 @@ function LoginPageUser() {
         });
 
         if (response.ok) {
-            alert("Sent mail");
+            setSnackbarMessage('Sent mail');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
             setShowModal(false);
         } else {
-            alert("Invalid credentials.");
+            setSnackbarMessage('Failed to send mail. Please try again.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
+
     };
 
     return (
@@ -169,7 +188,28 @@ function LoginPageUser() {
             )}
 
             {showModal && <div className="modal-backdrop fade show"></div>}
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setOpenSnackbar(false)}
+                    severity={snackbarSeverity}
+                    sx={{
+                        width: '100%',
+                        fontSize: '1.25rem', 
+                        padding: '16px', 
+                        textAlign: 'center', 
+                    }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
         </div>
+
     );
 }
 
