@@ -13,16 +13,18 @@ namespace BeHealthyProject.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "User")]
+    [Authorize(Roles = "User")]
     public class UserController : ControllerBase
     {
         private readonly UserManager<BaseUser> _userManager;
         private readonly IDietitianService _dietitianService;
+        private readonly ISubscribeService _subscribeService;
 
-		public UserController(UserManager<BaseUser> userManager, IDietitianService dietitianService)
+		public UserController(UserManager<BaseUser> userManager, IDietitianService dietitianService, ISubscribeService subscribeService)
 		{
 			_userManager = userManager;
 			_dietitianService = dietitianService;
+			_subscribeService = subscribeService;
 		}
 
 		[HttpPut("update-profile")]
@@ -85,8 +87,40 @@ namespace BeHealthyProject.Server.Controllers
             var dietitians = _dietitianService.GetDietitians();
             return dietitians;
         }
+		[HttpPost("subscribe")]
+		public async Task<ActionResult> Subscribe([FromBody] string dietitianId)
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (userId == null)
+			{
+				return NotFound("User not found!");
+			}
 
-        [HttpGet("check-availability")]
+			if (string.IsNullOrEmpty(dietitianId))
+			{
+				return BadRequest("DietitianId is required.");
+			}
+
+			await _subscribeService.Subscribe(dietitianId, userId);
+			return Ok("Subscribe successful");
+		}
+
+		[HttpGet("get-subscribed-dietitians")]
+		public async Task<ActionResult<List<string>>> GetSubscribedDietitians()
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (userId == null)
+			{
+				return NotFound("User not found!");
+			}
+
+			var subscribedDietitians = await _subscribeService.GetSubscribedDietitians(userId);
+			return subscribedDietitians;
+		}
+
+
+
+		[HttpGet("check-availability")]
         [AllowAnonymous] 
         public async Task<ActionResult> CheckAvailability(string? email, string? nickname)
         {

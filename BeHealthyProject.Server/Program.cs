@@ -82,6 +82,7 @@ builder.Services.AddAuthorization(options =>
 	});
 });
 builder.Services.AddScoped<IDietitianService,DietitianService>();
+builder.Services.AddScoped<ISubscribeService,SubscribeService>();
 
 var app = builder.Build();
 
