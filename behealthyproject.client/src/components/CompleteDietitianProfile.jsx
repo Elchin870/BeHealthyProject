@@ -17,6 +17,8 @@ function CompleteDietitianProfile() {
     const [experience, setExperience] = useState(null);
     const [price, setPrice] = useState(null);
     const [isComplete, setIsComplete] = useState();
+    const [hasProgram, setHasProgram] = useState();
+
 
     const specializationOptions = [
         "Clinical Nutrition",
@@ -66,13 +68,20 @@ function CompleteDietitianProfile() {
                 certifications,
                 experience,
                 price
-                
+
             })
         });
 
         if (response.ok) {
             alert("Updated Profile!");
-            navigate("/dietitianpage");
+            if (hasProgram) {
+
+                navigate("/dietitianpage");
+            }
+            else {
+                navigate("/createprogram")
+            }
+
         } else {
             alert("Invalid credentials.");
         }
@@ -106,6 +115,7 @@ function CompleteDietitianProfile() {
                             : []);
                     setIsComplete(data.isComplete);
                     setPrice(data.price);
+                    setHasProgram(data.hasProgram);
                 } else {
                     alert("Invalid credentials.");
                 }
@@ -118,8 +128,8 @@ function CompleteDietitianProfile() {
     }, []);
 
     return (
-        <div className="signuppageimg"> 
-            {!isComplete && 
+        <div className="signuppageimg">
+            {!isComplete &&
 
                 <div className="container d-flex justify-content-center align-items-center min-vh-100">
                     <div className="col-md-8 col-lg-6 p-4 shadow-lg rounded bg-light">

@@ -17,6 +17,7 @@ namespace BeHealthyProject.Server.Data
 		public DbSet<Food> Foods { get; set; }
 
 		public DbSet<Subscriber> Subscribers { get; set; }
+		public DbSet<DietProgram> DietPrograms { get; set;}
 
 	}
 }

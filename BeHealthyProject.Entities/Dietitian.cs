@@ -8,6 +8,8 @@ namespace BeHealthyProject.Entities
         public List<string> Certifications { get; set; } = new List<string>();
         public int? Experience { get; set; }
 		public double? Price { get; set; }
+        public bool HasProgram { get; set; } = false;
+        public List<DietProgram> DietPrograms { get; set; } = new List<DietProgram> { };
 
-	}
+    }
 }

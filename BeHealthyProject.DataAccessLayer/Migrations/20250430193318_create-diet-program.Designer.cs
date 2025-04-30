@@ -4,6 +4,7 @@ using BeHealthyProject.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeHealthyProject.Server.Migrations
 {
     [DbContext(typeof(BeHealthyDbContext))]
-    partial class BeHealthyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250430193318_create-diet-program")]
+    partial class createdietprogram
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -374,9 +377,6 @@ namespace BeHealthyProject.Server.Migrations
 
                     b.Property<int?>("Experience")
                         .HasColumnType("int");
-
-                    b.Property<bool>("HasProgram")
-                        .HasColumnType("bit");
 
                     b.Property<double?>("Price")
                         .HasColumnType("float");

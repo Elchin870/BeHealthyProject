@@ -4,6 +4,7 @@ using BeHealthyProject.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeHealthyProject.Server.Migrations
 {
     [DbContext(typeof(BeHealthyDbContext))]
-    partial class BeHealthyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250429194905_DietProgram2")]
+    partial class DietProgram2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,16 +110,11 @@ namespace BeHealthyProject.Server.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DietitianId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Goal")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DietitianId");
 
                     b.ToTable("DietPrograms");
                 });
@@ -375,9 +373,6 @@ namespace BeHealthyProject.Server.Migrations
                     b.Property<int?>("Experience")
                         .HasColumnType("int");
 
-                    b.Property<bool>("HasProgram")
-                        .HasColumnType("bit");
-
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 
@@ -406,13 +401,6 @@ namespace BeHealthyProject.Server.Migrations
                     b.HasIndex("SubscriberId");
 
                     b.HasDiscriminator().HasValue("User");
-                });
-
-            modelBuilder.Entity("BeHealthyProject.Entities.DietProgram", b =>
-                {
-                    b.HasOne("BeHealthyProject.Entities.Dietitian", null)
-                        .WithMany("DietPrograms")
-                        .HasForeignKey("DietitianId");
                 });
 
             modelBuilder.Entity("BeHealthyProject.Entities.Meal", b =>
@@ -509,11 +497,6 @@ namespace BeHealthyProject.Server.Migrations
             modelBuilder.Entity("BeHealthyProject.Entities.Subscriber", b =>
                 {
                     b.Navigation("Subscribers");
-                });
-
-            modelBuilder.Entity("BeHealthyProject.Entities.Dietitian", b =>
-                {
-                    b.Navigation("DietPrograms");
                 });
 #pragma warning restore 612, 618
         }

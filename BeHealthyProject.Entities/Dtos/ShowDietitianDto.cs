@@ -16,5 +16,6 @@ namespace BeHealthyProject.Entities.Dtos
 		public List<string> Certifications { get; set; } = new List<string>();
 		public int? Experience { get; set; }
 		public bool isComplete { get; set; } = false;
+		public bool hasProgram { get; set; } = false;
     }
 }

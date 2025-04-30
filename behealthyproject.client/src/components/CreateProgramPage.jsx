@@ -1,163 +1,141 @@
-import React, { useState, useEffect } from 'react';
-
-import "bootstrap/dist/css/bootstrap.min.css";
-import Dropdown from 'react-bootstrap/Dropdown';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-    Form,
-    FormGroup,
-    Label,
-    Input,
-    Button
+    Form, FormGroup, Label, Input, Button, Row, Col, Card, CardBody
 } from 'reactstrap';
 
-function CreateProgramPage() {
-    const [price, setPrice] = useState(null);
-    const [purpose, setPurpose] = useState('');
-    const [isComplete, setIsComplete] = useState(false);
-    const [breakfast, setBreakfast] = useState('');
-    const [lunch, setLunch] = useState('');
-    const [dinner, setDinner] = useState('');
-    const [water, setWater] = useState(null);
+const mealTypes = ["Breakfast", "Lunch", "Dinner", "Snack"];
+const unitOptions = ["gram", "ml", "piece", "slice", "cup"];
+
+const CreateProgramPage = () => {
+    const [goal, setGoal] = useState('');
+    const [meals, setMeals] = useState([
+        { mealType: 'Breakfast', items: [{ name: '', quantity: 0, unit: 'gram' }] }
+    ]);
 
     const token = sessionStorage.getItem('token');
+    const navigate = useNavigate()
 
-    const purposesOptions = [
-        "Weight Loss",
-        "Muscle Gain",
-        "Maintain Health"
-    ];
+    const handleMealTypeChange = (index, value) => {
+        const updated = [...meals];
+        updated[index].mealType = value;
+        setMeals(updated);
+    };
 
+    const handleItemChange = (mealIndex, itemIndex, field, value) => {
+        const updated = [...meals];
+        updated[mealIndex].items[itemIndex][field] = value;
+        setMeals(updated);
+    };
 
+    const addMeal = () => {
+        setMeals([...meals, { mealType: 'Snack', items: [{ name: '', quantity: 0, unit: 'gram' }] }]);
+    };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch("https://localhost:7148/api/Dietitian/get-profile", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                    },
-                });
+    const addItem = (mealIndex) => {
+        const updated = [...meals];
+        updated[mealIndex].items.push({ name: '', quantity: 0, unit: 'gram' });
+        setMeals(updated);
+    };
 
-                if (response.ok) {
-                    const data = await response.json();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-                    if (data.isComplete) {
-                        return;
-                    }
+       
 
+        const response = await fetch('https://localhost:7148/api/Dietitian/create-diet-program', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ goal, meals })
+        });
 
-                    setIsComplete(data.isComplete);
-                } else {
-                    alert("Invalid credentials.");
-                }
-            } catch (error) {
-                console.error("Error fetching profile data:", error);
-            }
-        };
-
-        fetchData();
-    }, []);
+        if (response.ok) {
+            setGoal('');
+            setMeals([{ mealType: 'Breakfast', items: [{ name: '', quantity: 0, unit: 'gram' }] }]);
+            alert("Created successfully")
+            navigate("/dietitianpage")
+            
+        } else {
+            alert("Invalid Credentials");
+        }
+    };
 
     return (
-        <div className="signuppageimg">
-            {isComplete ||
-                <div className="container d-flex justify-content-center align-items-center min-vh-100">
-                    <div className="col-md-8 col-lg-6 p-4 shadow-lg rounded bg-light">
-                        <h2 className="text-center mb-4">Create diet program</h2>
-                        <Form>
-                            <Dropdown className="mb-3">
-                                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                    {purpose || "Select purpose of program"}
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                    {purposesOptions.map((option, index) => (
-                                        <Dropdown.Item key={index} onClick={() => setPurpose(option)}>
-                                            {option}
-                                        </Dropdown.Item>
-                                    ))}
-                                </Dropdown.Menu>
-                            </Dropdown>
+        <Form onSubmit={handleSubmit} className="p-4 ">
+            <FormGroup>
+                <Label for="goal">Goal</Label>
+                <Input
+                    id="goal"
+                    type="text"
+                    value={goal}
+                    onChange={(e) => setGoal(e.target.value)}
+                    placeholder="e.g. Weight Loss"
+                />
+            </FormGroup>
 
-                            <FormGroup>
-                                <Label for="breakfast">Breakfast</Label>
-                                <Input
-                                    id="breakfast"
-                                    name="breakfast"
-                                    placeholder="e.g: Egg, Berries,"
-                                    type="text"
-                                    value={breakfast}
-                                    onChange={(e) => setBreakfast(e.target.value)}
-                                />
-                            </FormGroup>
+            {meals.map((meal, i) => (
+                <Card className="mb-3" key={i}>
+                    <CardBody>
+                        <FormGroup>
+                            <Label>Meal Type</Label>
+                            <Input
+                                type="select"
+                                value={meal.mealType}
+                                onChange={(e) => handleMealTypeChange(i, e.target.value)}
+                            >
+                                {mealTypes.map(type => <option key={type}>{type}</option>)}
+                            </Input>
+                        </FormGroup>
 
-                            <FormGroup>
-                                <Label for="lunch">Lunch</Label>
-                                <Input
-                                    id="lunch"
-                                    name="lunch"
-                                    placeholder="e.g: Egg, Berries,"
-                                    type="text"
-                                    value={lunch}
-                                    onChange={(e) => setLunch(e.target.value)}
-                                />
-                            </FormGroup>
+                        {meal.items.map((item, j) => (
+                            <Row key={j} className="align-items-end mb-2">
+                                <Col md={5}>
+                                    <FormGroup>
+                                        <Label>Food Name</Label>
+                                        <Input
+                                            type="text"
+                                            value={item.name}
+                                            onChange={(e) => handleItemChange(i, j, 'name', e.target.value)}
+                                        />
+                                    </FormGroup>
+                                </Col>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label>Quantity</Label>
+                                        <Input
+                                            type="number"
+                                            value={item.quantity}
+                                            onChange={(e) => handleItemChange(i, j, 'quantity', parseInt(e.target.value))}
+                                        />
+                                    </FormGroup>
+                                </Col>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label>Unit</Label>
+                                        <Input
+                                            type="select"
+                                            value={item.unit}
+                                            onChange={(e) => handleItemChange(i, j, 'unit', e.target.value)}
+                                        >
+                                            {unitOptions.map(unit => <option key={unit}>{unit}</option>)}
+                                        </Input>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                        ))}
 
-                            <FormGroup>
-                                <Label for="dinner">Dinner</Label>
-                                <Input
-                                    id="dinner"
-                                    name="dinner"
-                                    placeholder="e.g: Egg, Berries,"
-                                    type="text"
-                                    value={dinner}
-                                    onChange={(e) => setDinner(e.target.value)}
-                                />
-                            </FormGroup>
+                        <Button color="secondary" size="sm" onClick={() => addItem(i)}>+ Add Food</Button>
+                    </CardBody>
+                </Card>
+            ))}
 
-                            <FormGroup>
-                                <Label for="water">Water</Label>
-                                <Input
-                                    id="water"
-                                    name="water"
-                                    placeholder="2"
-                                    step="0.5"
-                                    min="0.5"
-                                    max="5.5"
-                                    type="number"
-                                    value={water || ''}
-                                    onChange={(e) => setWater(Number(e.target.value))}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label htmlFor="price">Price program (USD)</Label>
-                                <Input
-                                    id="price"
-                                    type="number"
-                                    step="0.5"
-                                    className="form-control"
-                                    placeholder="19.99"
-                                    max="100"
-                                    min="1"
-                                    onChange={(e) => setPrice(Number(e.target.value))}
-                                    value={price || ''}
-                                    required
-                                />
-                            </FormGroup>
-
-                            <Button className="btn btn-success w-100 py-2" type="submit">
-                                Submit
-                            </Button>
-                        </Form>
-                    </div>
-                </div>
-
-            }
-
-        </div>
+            <Button color="info" onClick={addMeal} className="mb-3">+ Add Meal</Button><br />
+            <Button color="primary" type="submit">Submit Program</Button>
+        </Form>
     );
-}
+};
 
 export default CreateProgramPage;
