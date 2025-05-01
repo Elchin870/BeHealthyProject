@@ -10,6 +10,6 @@ namespace BeHealthyProject.Entities
 		public double? Price { get; set; }
         public bool HasProgram { get; set; } = false;
         public List<DietProgram> DietPrograms { get; set; } = new List<DietProgram> { };
-
+        public DietitianStatus Status { get; set; } = DietitianStatus.Pending;
     }
 }

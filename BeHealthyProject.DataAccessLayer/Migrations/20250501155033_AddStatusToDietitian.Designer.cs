@@ -4,6 +4,7 @@ using BeHealthyProject.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeHealthyProject.Server.Migrations
 {
     [DbContext(typeof(BeHealthyDbContext))]
-    partial class BeHealthyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250501155033_AddStatusToDietitian")]
+    partial class AddStatusToDietitian
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,7 +111,6 @@ namespace BeHealthyProject.Server.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DietitianId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Goal")
@@ -414,13 +416,9 @@ namespace BeHealthyProject.Server.Migrations
 
             modelBuilder.Entity("BeHealthyProject.Entities.DietProgram", b =>
                 {
-                    b.HasOne("BeHealthyProject.Entities.Dietitian", "Dietitian")
+                    b.HasOne("BeHealthyProject.Entities.Dietitian", null)
                         .WithMany("DietPrograms")
-                        .HasForeignKey("DietitianId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Dietitian");
+                        .HasForeignKey("DietitianId");
                 });
 
             modelBuilder.Entity("BeHealthyProject.Entities.Meal", b =>

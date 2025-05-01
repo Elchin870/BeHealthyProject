@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Spinner } from 'reactstrap';
 import { Button } from 'reactstrap';
 import { jwtDecode } from "jwt-decode"
+import { Snackbar, Alert } from '@mui/material';
 
 function LoginPageDietitian() {
     const [username, setUsername] = useState("");
@@ -11,6 +12,9 @@ function LoginPageDietitian() {
     const [showModal, setShowModal] = useState(false);
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const navigate = useNavigate();
 
@@ -54,10 +58,17 @@ function LoginPageDietitian() {
                 console.log("Token:", token);
                 console.log("Role:", role);
 
-                alert("Login successful!");
-                navigate("/completedietitianprofile");
+                setSnackbarMessage('Login successful!');
+                setSnackbarSeverity('success');
+                setOpenSnackbar(true);
+                setTimeout(() => {
+                    navigate("/completedietitianprofile");
+                }, 2000);
+
             } else {
-                alert("Invalid credentials.");
+                setSnackbarMessage('Invalid credentials.');
+                setSnackbarSeverity('error');
+                setOpenSnackbar(true);
             }
         } finally {
             setLoading(false);
@@ -76,10 +87,14 @@ function LoginPageDietitian() {
         });
 
         if (response.ok) {
-            alert("Sent mail");
+            setSnackbarMessage('Sent mail successful!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
             setShowModal(false);
         } else {
-            alert("Invalid credentials.");
+            setSnackbarMessage('Invalid credentials.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     };
 
@@ -175,6 +190,27 @@ function LoginPageDietitian() {
             )}
 
             {showModal && <div className="modal-backdrop fade show"></div>}
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setOpenSnackbar(false)}
+                    severity={snackbarSeverity}
+                    sx={{
+                        width: '100%',
+                        fontSize: '1.25rem',
+                        padding: '16px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
         </div>
     );
 }

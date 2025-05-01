@@ -17,5 +17,6 @@ namespace BeHealthyProject.Entities.Dtos
 		public int? Experience { get; set; }
 		public bool isComplete { get; set; } = false;
 		public bool hasProgram { get; set; } = false;
+        public DietitianStatus Status { get; set; }
     }
 }

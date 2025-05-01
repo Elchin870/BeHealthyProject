@@ -33,18 +33,18 @@ namespace BeHealthyProject.Server.Controllers
         private readonly IDistributedCache _cache;
         private readonly IDietitianService _dietitianService;
 
-		public AuthController(UserManager<BaseUser> userManager, RoleManager<IdentityRole> roleManager, BeHealthyDbContext beHealthyDbContext, IConfiguration configuration, IDistributedCache cache, IDietitianService dietitianService)
-		{
-			_userManager = userManager;
-			_roleManager = roleManager;
-			_beHealthyDbContext = beHealthyDbContext;
-			_configuration = configuration;
-			_cache = cache;
-			_dietitianService = dietitianService;
-		}
+        public AuthController(UserManager<BaseUser> userManager, RoleManager<IdentityRole> roleManager, BeHealthyDbContext beHealthyDbContext, IConfiguration configuration, IDistributedCache cache, IDietitianService dietitianService)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _beHealthyDbContext = beHealthyDbContext;
+            _configuration = configuration;
+            _cache = cache;
+            _dietitianService = dietitianService;
+        }
 
 
-		[HttpPost("signup-user")]
+        [HttpPost("signup-user")]
         public async Task<ActionResult> SignUpAsUser([FromBody] RegisterDto dto)
         {
             if (!ModelState.IsValid)
@@ -318,13 +318,82 @@ namespace BeHealthyProject.Server.Controllers
 
             return Ok($"Hello {name}, you are authenticated as a {role}!");
         }
-		[HttpGet("Dietitians")]
-		public async Task<ActionResult<List<ShowDietitianDto>>> GetDietitians()
-		{
-			var dietitians = await _dietitianService.GetDietitians();
-			return dietitians;
-		}
+        [HttpGet("Dietitians")]
+        public async Task<ActionResult<List<ShowDietitianDto>>> GetDietitians()
+        {
+            var dietitians = await _dietitianService.GetDietitians();
+            return dietitians;
+        }
 
-	}
+        [HttpPost("create-admin")]
+        public async Task<IActionResult> CreateAdmin()
+        {
+            var existing = await _userManager.FindByNameAsync("admin");
+            if (existing != null)
+                return BadRequest("Admin already exists.");
+
+            var admin = new BaseUser
+            {
+                UserName = "admin",
+                Email = "admin@admin.com"
+            };
+
+            var result = await _userManager.CreateAsync(admin, "admin123");
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            if (!await _roleManager.RoleExistsAsync("Admin"))
+                await _roleManager.CreateAsync(new IdentityRole("Admin"));
+
+            await _userManager.AddToRoleAsync(admin, "Admin");
+
+            return Ok("Admin created");
+        }
+
+        [HttpPost("signin-admin")]
+        public async Task<IActionResult> SignInForAdmin([FromBody] LoginDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var baseUser = await _userManager.FindByNameAsync(dto.Username);
+            var admin = baseUser as BaseUser;
+
+            if (admin != null && await _userManager.CheckPasswordAsync(admin, dto.Password))
+            {
+                if (!await _roleManager.RoleExistsAsync("Admin"))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                }
+
+                if (!await _userManager.IsInRoleAsync(admin, "Admin"))
+                {
+                    await _userManager.AddToRoleAsync(admin, "Admin");
+                }
+
+                var userRoles = await _userManager.GetRolesAsync(admin);
+
+                var authClaims = new List<Claim>
+{
+    new Claim(ClaimTypes.Name, admin.UserName),
+    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+    new Claim(ClaimTypes.NameIdentifier, admin.Id)
+};
+
+                foreach (var role in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var token = GetToken(authClaims);
+
+                return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token), Expiration = token.ValidTo });
+            }
+
+            return Unauthorized();
+        }
+
+    }
 
 }

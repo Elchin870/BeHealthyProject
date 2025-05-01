@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Snackbar, Alert } from '@mui/material';
+
 function ResetPassword() {
     const [email, setEmail] = useState('');
     const [resetCode, setResetCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const navigate = useNavigate();
     const HandleResetPassword = async (ev) => {
@@ -17,10 +22,17 @@ function ResetPassword() {
         });
 
         if (response.ok) {
-            alert("Password changed successful!");
-            navigate("/");
+            setSnackbarMessage('Login successful!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+            setTimeout(() => {
+                navigate("/");
+            }, 1500);
+
         } else {
-            alert("Invalid credentials.");
+            setSnackbarMessage('Invalid credentials.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     };
 
@@ -53,13 +65,32 @@ function ResetPassword() {
                                 type="password"
                                 className="form-control form-control-lg"
                                 placeholder="New password"
-                                onChange={e => setNewPassword(e.target.value) }
+                                onChange={e => setNewPassword(e.target.value)}
                             />
                         </div>
                         <button className="btn btn-primary btn-lg w-100" onClick={HandleResetPassword}>Reset</button>
                     </form>
                 </div>
             </div>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setOpenSnackbar(false)}
+                    severity={snackbarSeverity}
+                    sx={{
+                        width: '100%',
+                        fontSize: '1.25rem',
+                        padding: '16px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }

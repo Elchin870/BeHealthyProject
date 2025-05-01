@@ -58,9 +58,16 @@ namespace BeHealthyProject.Server.Controllers
 			if (result.Succeeded)
 			{
 				user.IsCompleteProfile = true;
+				user.Status = 0;		
 				await _userManager.UpdateAsync(user);
-				return Ok(new { message = "Profile updated successfully!" });
-			}
+                return Ok(new
+                {
+                    message = "Profile updated successfully!",
+                    status = user.Status,
+                    isComplete = user.IsCompleteProfile,
+                    hasProgram = user.HasProgram
+                });
+            }
 			else
 			{
 				return BadRequest(new { message = "Failed to update profile", errors = result.Errors });
@@ -68,61 +75,68 @@ namespace BeHealthyProject.Server.Controllers
 
 		}
 
-		[HttpPost("create-diet-program")]
-		public async Task<IActionResult> CreateDietProgram([FromBody] CreateDietProgramDto dto)
-		{
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if (string.IsNullOrEmpty(userId))
-			{
-				return Unauthorized("Invalid token.");
-			}
+        [HttpPost("create-diet-program")]
+        public async Task<IActionResult> CreateDietProgram([FromBody] CreateDietProgramDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Invalid token.");
+            }
 
-			var baseUser = await _userManager.FindByIdAsync(userId);
-			var user = baseUser as Dietitian;
+            var baseUser = await _userManager.FindByIdAsync(userId);
+            var user = baseUser as Dietitian;
 
-			if (user == null)
-			{
-				return NotFound("User not found!");
-			}
+            if (user == null)
+            {
+                return NotFound("User not found!");
+            }
 
-			if (dto == null)
-			{
-				return BadRequest("Diet Program Data is null.");
-			}
+            if (dto == null)
+            {
+                return BadRequest("Diet Program Data is null.");
+            }
+
+            var dietProgram = new DietProgram
+            {
+                Id = Guid.NewGuid().ToString(),
+                Goal = dto.Goal,
+                DietitianId = user.Id, 
+                Meals = dto.Meals.Select(m => new Meal
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    MealType = m.MealType,
+                    Items = m.Items.Select(i => new MealItem
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = i.Name,
+                        Quantity = i.Quantity,
+                        Unit = i.Unit
+                    }).ToList()
+                }).ToList()
+            };
+
+            if (dietProgram.Meals == null || !dietProgram.Meals.Any())
+            {
+                return BadRequest("Meals data is invalid.");
+            }
+
+            _context.DietPrograms.Add(dietProgram);
+            user.HasProgram = true; 
+
+            await _context.SaveChangesAsync(); 
+
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new
+            {
+                message = "Diet program created successfully",
+                hasProgram = user.HasProgram
+            });
+        }
 
 
-			var dietProgram = new DietProgram
-			{
-				Id = Guid.NewGuid().ToString(),
-				Goal = dto.Goal,
-				Meals = dto.Meals.Select(m => new Meal
-				{
-					Id = Guid.NewGuid().ToString(),
-					MealType = m.MealType,
-					Items = m.Items.Select(i => new MealItem
-					{
-						Id = Guid.NewGuid().ToString(),
-						Name = i.Name,
-						Quantity = i.Quantity,
-						Unit = i.Unit
-					}).ToList()
-				}).ToList()
-			};
-
-			if (dietProgram.Meals == null || !dietProgram.Meals.Any())
-			{
-				return BadRequest("Meals data is invalid.");
-			}
-
-			_context.DietPrograms.Add(dietProgram);
-			await _context.SaveChangesAsync();
-			user.DietPrograms.Add(dietProgram);
-			user.HasProgram = true;
-
-			return Ok(new { message = "Diet program created successfully" });
-		}
-
-		[HttpGet("get-profile")]
+        [HttpGet("get-profile")]
 		public async Task<ActionResult> GetProfileData()
 		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -133,7 +147,7 @@ namespace BeHealthyProject.Server.Controllers
 			var baseUser = await _userManager.FindByIdAsync(userId);
 			var user = baseUser as Dietitian;
 			if (user == null) { return NotFound(); }
-			return Ok(new ShowDietitianDto { Specialization = user.Specialization, Experience = user.Experience, Certifications = user.Certifications, Nickname = user.Nickname, Username = user.UserName, isComplete=user.IsCompleteProfile, Price = user.Price, hasProgram = user.HasProgram});
+			return Ok(new ShowDietitianDto { Specialization = user.Specialization, Experience = user.Experience, Certifications = user.Certifications, Nickname = user.Nickname, Username = user.UserName, isComplete=user.IsCompleteProfile, Price = user.Price, hasProgram = user.HasProgram,Status=user.Status});
 		}
 
 	}

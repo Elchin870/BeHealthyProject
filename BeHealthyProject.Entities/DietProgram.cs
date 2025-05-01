@@ -11,6 +11,7 @@ namespace BeHealthyProject.Entities
 		public string Id { get; set; }
 		public string Goal { get; set; }
 		public List<Meal> Meals { get; set; } = new List<Meal>();
-
-	}
+        public string DietitianId { get; set; }
+        public Dietitian Dietitian { get; set; }
+    }
 }

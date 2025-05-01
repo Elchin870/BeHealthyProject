@@ -9,6 +9,7 @@ import {
     Input,
     Button
 } from 'reactstrap';
+import { Snackbar, Alert } from '@mui/material';
 
 function CompleteDietitianProfile() {
     const [specialization, setSpecialization] = useState(null);
@@ -18,6 +19,9 @@ function CompleteDietitianProfile() {
     const [price, setPrice] = useState(null);
     const [isComplete, setIsComplete] = useState();
     const [hasProgram, setHasProgram] = useState();
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
 
     const specializationOptions = [
@@ -73,17 +77,19 @@ function CompleteDietitianProfile() {
         });
 
         if (response.ok) {
-            alert("Updated Profile!");
-            if (hasProgram) {
+            const data = await response.json();
+            setSnackbarMessage('Updated Profile!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+            console.log(data.hasProgram)
+            navigate("/pendingpage");
 
-                navigate("/dietitianpage");
-            }
-            else {
-                navigate("/createprogram")
-            }
+
 
         } else {
-            alert("Invalid credentials.");
+            setSnackbarMessage('Invalid credentials.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     };
 
@@ -101,10 +107,26 @@ function CompleteDietitianProfile() {
                 if (response.ok) {
                     const data = await response.json();
 
-                    if (data.isComplete) {
-                        navigate("/dietitianpage");
+                    if (data.status === 0 && data.isComplete) {
+                        navigate("/pendingpage");
                         return;
                     }
+
+                    if (data.status === 2) {
+                        navigate("/declinedpage");
+                        return;
+                    }
+
+                    if (data.status === 1 && data.isComplete) {
+                        if (data.hasProgram === true) {
+                            navigate("/dietitianpage");
+                        } else {
+                            navigate("/createprogram");
+                        }
+                        return;
+                    }
+
+
 
                     setSpecialization(data.specialization);
                     setExperience(data.experience);
@@ -117,7 +139,9 @@ function CompleteDietitianProfile() {
                     setPrice(data.price);
                     setHasProgram(data.hasProgram);
                 } else {
-                    alert("Invalid credentials.");
+                    setSnackbarMessage('Invalid credentials.');
+                    setSnackbarSeverity('error');
+                    setOpenSnackbar(true);
                 }
             } catch (error) {
                 console.error("Error fetching profile data:", error);
@@ -209,6 +233,25 @@ function CompleteDietitianProfile() {
                     </div>
                 </div>
             }
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setOpenSnackbar(false)}
+                    severity={snackbarSeverity}
+                    sx={{
+                        width: '100%',
+                        fontSize: '1.25rem',
+                        padding: '16px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }

@@ -42,7 +42,7 @@ function SignUpPage() {
         });
 
         if (response.ok) {
-            setSnackbarMessage('Login successful!');
+            setSnackbarMessage('Register successful!');
             setSnackbarSeverity('success');
             setOpenSnackbar(true);
             setTimeout(() => {

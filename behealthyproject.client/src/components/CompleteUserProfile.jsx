@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Snackbar, Alert } from '@mui/material';
 import {
     Form,
     FormGroup,
@@ -14,7 +15,9 @@ function CompleteUserProfile() {
     const [height, setHeight] = useState(null);
     const [weight, setWeight] = useState(null);
     const [isComplete, setIsComplete] = useState();
-
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
@@ -32,10 +35,16 @@ function CompleteUserProfile() {
         });
         if (response.ok) {
 
-            alert("Updated Profile!");
-            navigate("/userpage");
+            setSnackbarMessage('Updated profile succesfull!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+            setTimeout(() => {
+                navigate("/userpage");
+            }, 1500);
         } else {
-            alert("Invalid credentials.");
+            setSnackbarMessage('Invalid credentials.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     }
 
@@ -163,6 +172,25 @@ function CompleteUserProfile() {
                 </div>
             </div>
         }
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setOpenSnackbar(false)}
+                    severity={snackbarSeverity}
+                    sx={{
+                        width: '100%',
+                        fontSize: '1.25rem',
+                        padding: '16px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }

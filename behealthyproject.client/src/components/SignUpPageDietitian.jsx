@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Snackbar, Alert } from '@mui/material';
 
 function SignUpPageDietitian() {
     const navigate = useNavigate();
@@ -9,6 +10,9 @@ function SignUpPageDietitian() {
     const [nickname, setNickname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const goToDietitianLoginPage = () => {
         navigate('/signin/dietitian');
@@ -25,10 +29,17 @@ function SignUpPageDietitian() {
         });
 
         if (response.ok) {
-            alert("Register successful!");
-            navigate("/signin/dietitian");
+            setSnackbarMessage('Register successful!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+            setTimeout(() => {
+                navigate("/signin/dietitian");
+            }, 2000);
+
         } else {
-            alert("Invalid credentials.");
+            setSnackbarMessage('Invalid credentials.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
 
     };
@@ -65,6 +76,25 @@ function SignUpPageDietitian() {
                     </div>
                 </div>
             </div>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setOpenSnackbar(false)}
+                    severity={snackbarSeverity}
+                    sx={{
+                        width: '100%',
+                        fontSize: '1.25rem',
+                        padding: '16px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }

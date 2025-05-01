@@ -15,6 +15,10 @@ import CompleteDietitianProfile from './components/CompleteDietitianProfile';
 import DietitianProfile from './components/DietitianProfile';
 import DietitiansListForUser from './components/DietitiansListForUser';
 import CreateProgramPage from './components/CreateProgramPage';
+import AdminLogin from './components/AdminLogin'
+import AdminPage from './components/AdminPage';
+import PendingPage from './components/PendingPage';
+import DeclinedPage from './components/DeclinedPage';
 
 function App() {
     return (
@@ -27,6 +31,7 @@ function App() {
                 <Route path="/resetpassword" element={<ResetPassword />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 <Route path="/forbidden" element={<Forbidden />} />
+                <Route path="/adminlogin" element={<AdminLogin />} />
 
                 <Route path="/dietitianpage" element={
                     <ProtectedRoute requiredRole="dietitian">
@@ -68,6 +73,25 @@ function App() {
                         <DietitianProfile />
                     </ProtectedRoute>
                 } />
+
+                <Route path="/adminpage" element={
+                    <ProtectedRoute requiredRole="admin">
+                        <AdminPage />
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/pendingpage" element={
+                    <ProtectedRoute requiredRole="dietitian">
+                        <PendingPage />
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/declinedpage" element={
+                    <ProtectedRoute requiredRole="dietitian">
+                        <DeclinedPage />
+                    </ProtectedRoute>
+                } />
+
             </Routes>
         </Router>
     );

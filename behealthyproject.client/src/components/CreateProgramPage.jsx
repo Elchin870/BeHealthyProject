@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     Form, FormGroup, Label, Input, Button, Row, Col, Card, CardBody
 } from 'reactstrap';
+import { Snackbar, Alert } from '@mui/material';
 
 const mealTypes = ["Breakfast", "Lunch", "Dinner", "Snack"];
 const unitOptions = ["gram", "ml", "piece", "slice", "cup"];
@@ -12,6 +13,9 @@ const CreateProgramPage = () => {
     const [meals, setMeals] = useState([
         { mealType: 'Breakfast', items: [{ name: '', quantity: 0, unit: 'gram' }] }
     ]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate()
@@ -41,7 +45,7 @@ const CreateProgramPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-       
+
 
         const response = await fetch('https://localhost:7148/api/Dietitian/create-diet-program', {
             method: 'POST',
@@ -55,11 +59,18 @@ const CreateProgramPage = () => {
         if (response.ok) {
             setGoal('');
             setMeals([{ mealType: 'Breakfast', items: [{ name: '', quantity: 0, unit: 'gram' }] }]);
-            alert("Created successfully")
-            navigate("/dietitianpage")
-            
+            setSnackbarMessage('Diet program created successfully!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+            setTimeout(() => {
+                navigate("/dietitianpage");
+            }, 1500);
+
+
         } else {
-            alert("Invalid Credentials");
+            setSnackbarMessage('Invalid credentials.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     };
 
@@ -134,7 +145,27 @@ const CreateProgramPage = () => {
 
             <Button color="info" onClick={addMeal} className="mb-3">+ Add Meal</Button><br />
             <Button color="primary" type="submit">Submit Program</Button>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setOpenSnackbar(false)}
+                    severity={snackbarSeverity}
+                    sx={{
+                        width: '100%',
+                        fontSize: '1.25rem',
+                        padding: '16px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Form>
+
     );
 };
 
