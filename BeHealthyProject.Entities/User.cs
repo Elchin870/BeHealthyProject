@@ -7,5 +7,6 @@ namespace BeHealthyProject.Entities
         public int? Age { get; set; }
         public double? Height { get; set; }
         public double? Weight { get; set; }
+        public double Balance { get; set; } = 0;
     }
 }

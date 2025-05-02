@@ -9,5 +9,6 @@
         public double? Weight { get; set; }
 
         public bool IsCompleteProfile { get; set; }
+        public double Balance { get; set; }
     }
 }

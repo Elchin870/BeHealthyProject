@@ -19,6 +19,7 @@ import AdminLogin from './components/AdminLogin'
 import AdminPage from './components/AdminPage';
 import PendingPage from './components/PendingPage';
 import DeclinedPage from './components/DeclinedPage';
+import AddBalancePage from './components/AddBalancePage';
 
 function App() {
     return (
@@ -89,6 +90,12 @@ function App() {
                 <Route path="/declinedpage" element={
                     <ProtectedRoute requiredRole="dietitian">
                         <DeclinedPage />
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/addbalance" element={
+                    <ProtectedRoute requiredRole="user">
+                        <AddBalancePage />
                     </ProtectedRoute>
                 } />
 

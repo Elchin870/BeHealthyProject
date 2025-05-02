@@ -11,12 +11,16 @@ function UserProfile() {
         height: '',
         weight: '',
         username: '',
-        nickname: ''
+        nickname: '',
+        balance: 0
     });
     const [originalProfileData, setOriginalProfileData] = useState({
         age: '',
         height: '',
         weight: '',
+        username: '',
+        nickname: '',
+        balance: 0
     });
     const [loading, setLoading] = useState(true);
 
@@ -32,14 +36,16 @@ function UserProfile() {
                     height: response.data.height,
                     weight: response.data.weight,
                     username: response.data.username,
-                    nickname: response.data.nickname
+                    nickname: response.data.nickname,
+                    balance: response.data.balance
                 });
                 setOriginalProfileData({
                     age: response.data.age,
                     height: response.data.height,
                     weight: response.data.weight,
                     username: response.data.username,
-                    nickname: response.data.nickname
+                    nickname: response.data.nickname,
+                    balance: response.data.balance
                 });
                 setLoading(false);
             })
@@ -147,15 +153,29 @@ function UserProfile() {
                             onChange={handleInputChange}
                         />
                     </div>
-                    <div className="d-flex justify-content-between">
-                        <button className="btn btn-secondary" onClick={() => setProfileData(originalProfileData)}>
+                    <div className="mb-3">
+                        <label className="form-label">Balance (₼)</label>
+                        <input
+                            type="number"
+                            className="form-control"
+                            name="balance"
+                            value={profileData.balance}
+                            disabled
+                        />
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <span className="me-3 fw-bold">Balance: ₼{profileData.balance}</span>
+                        <button className="btn btn-secondary me-2" onClick={() => setProfileData(originalProfileData)}>
                             Cancel
                         </button>
-                        <button className="btn btn-danger" onClick={() => {
+                        <button className="btn btn-danger me-2" onClick={() => {
                             sessionStorage.removeItem('token');
                             navigate('/');
                         }}>
                             Logout
+                        </button>
+                        <button className="btn btn-primary me-2" onClick={() => navigate('/addbalance')}>
+                            Add Balance
                         </button>
                         <button
                             className="btn btn-success"
@@ -170,6 +190,7 @@ function UserProfile() {
                             Save Changes
                         </button>
                     </div>
+
                 </div>
             </div>
         </>

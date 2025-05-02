@@ -78,7 +78,7 @@ namespace BeHealthyProject.Server.Controllers
             var baseUser = await _userManager.FindByIdAsync(userId);
             var user = baseUser as User;
             if (user == null) { return NotFound(); }
-            return Ok(new UpdateUserProfileDto { Age = user.Age, Height = user.Height, Weight = user.Weight, IsCompleteProfile = user.IsCompleteProfile, Nickname = user.Nickname, Username = user.UserName });
+            return Ok(new UpdateUserProfileDto { Age = user.Age, Height = user.Height, Weight = user.Weight, IsCompleteProfile = user.IsCompleteProfile, Nickname = user.Nickname, Username = user.UserName, Balance = user.Balance });
         }
 
         [HttpGet("get-dietitians")]
@@ -146,6 +146,24 @@ namespace BeHealthyProject.Server.Controllers
 
             return Ok(new { emailAvailable, nicknameAvailable });
         }
-        
+
+        [HttpPost("add-balance")]
+        public async Task<IActionResult> AddBalance([FromBody] AddBalanceDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized("Invalid token.");
+
+            var user = await _userManager.FindByIdAsync(userId) as User;
+            if (user == null) return NotFound("User not found.");
+
+            user.Balance += dto.Amount;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok(new { message = "Balance added successfully!" });
+        }
+
     }
 }
