@@ -33,21 +33,20 @@ builder.Services.AddCors(options =>
 						  .AllowAnyHeader());
 });
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-	options.Password.RequireDigit = false;
-	options.Password.RequiredLength = 6;
-	options.Password.RequireNonAlphanumeric = false;
-	options.Password.RequireUppercase = false;
-	options.Password.RequireLowercase = false;
-});
 
 builder.Services.AddIdentity<BaseUser, IdentityRole>(options =>
 {
-	options.User.RequireUniqueEmail = true;
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
 })
 .AddEntityFrameworkStores<BeHealthyDbContext>()
 .AddDefaultTokenProviders();
+
+
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddAuthentication(options =>

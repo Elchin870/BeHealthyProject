@@ -5,6 +5,7 @@ import { Spinner } from 'reactstrap';
 import { Button } from 'reactstrap';
 import { jwtDecode } from "jwt-decode"
 import { Snackbar, Alert } from '@mui/material';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 
 function LoginPageUser() {
@@ -15,8 +16,8 @@ function LoginPageUser() {
     const [email, setEmail] = useState("");
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState('success'); 
-
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
 
@@ -112,13 +113,31 @@ function LoginPageUser() {
                                 onChange={e => setUsername(e.target.value)}
                             />
                         </div>
-                        <div className="mb-1">
-                            <input
-                                type="password"
-                                className="form-control form-control-lg"
-                                placeholder="Password"
-                                onChange={e => setPassword(e.target.value)}
-                            />
+                        <div className="mb-4">
+                            <div className="position-relative" style={{ height: "40px" }}>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    className="form-control h-100"
+                                    placeholder="Password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                <span
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    style={{
+                                        position: "absolute",
+                                        top: "50%",
+                                        right: "15px",
+                                        transform: "translateY(-50%)",
+                                        cursor: "pointer",
+                                        color: "gray",
+                                        fontSize: "1.2rem"
+                                    }}
+                                >
+                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                </span>
+                            </div>
                         </div>
                     </form>
                     <div className="row mt-2">
@@ -199,9 +218,9 @@ function LoginPageUser() {
                     severity={snackbarSeverity}
                     sx={{
                         width: '100%',
-                        fontSize: '1.25rem', 
-                        padding: '16px', 
-                        textAlign: 'center', 
+                        fontSize: '1.25rem',
+                        padding: '16px',
+                        textAlign: 'center',
                     }}
                 >
                     {snackbarMessage}

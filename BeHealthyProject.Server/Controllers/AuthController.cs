@@ -117,7 +117,7 @@ namespace BeHealthyProject.Server.Controllers
                     Message = "Dietitian created succesfully"
                 });
             }
-            return BadRequest();
+            return BadRequest(result.Errors);
         }
 
 
